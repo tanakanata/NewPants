@@ -18,18 +18,13 @@ from pathlib import Path
 TOKEN = config.AT
 tz = config.TZ
 client = discord.Client()
-CHANNEL_ID = int(config.VC_id)
+CHANNEL_ID = int(config.VC_id1)
 SOUND_BASE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
-TZ_LIST_PATH = Path(__file__).absolute().parent / 'timezone.json'
-# debug
-debug_alarm = (datetime.datetime.now(pytz.timezone(tz)) +
-               datetime.timedelta(minutes=1)).strftime('%H:%M')
-DEBUG_TOKEN = config.DEBUGTOKEN
 # -----------------------------------------------------------------------------------------
 
 tokyo_timezone = pytz.timezone('Asia/Tokyo')
 
-bot = commands.Bot(command_prefix='!')
+bot = commands.Bot(command_prefix='_')
 # print(dir(bot))
 
 @bot.event
@@ -48,13 +43,12 @@ async def on_ready():
     print('起動時刻')
     print(config.TZ)
     print(now)
-#    print(config.AT) #stdoutにTokenを載せるな
     print(dice)
     print('--------------------')
     await bot.change_presence(activity=discord.Game(tz))
 
 @bot.command()
-async def timetest(ctx):
+async def nowtime(ctx):
     await ctx.send(now)
 
 @bot.command()
@@ -83,21 +77,6 @@ async def list_timezone(ctx):
 
         await ctx.send(f'```{partMessageBody}```')
 
-# @bot.command()
-# async def list_timezone(ctx):
-#     # ファイルを開き、変数fにファイルを設定
-#     with TZ_LIST_PATH.open() as f:
-#         # ファイルを配列として読み込み(json指定)
-#         json_list = json.loads(f.read())
-#         # 拡張for(foreach)を利用し、json_listのkeyとvalueを取得
-#         for key, value in json_list.items():
-#             # textに対して、valueの値を改行区切りで設定していく
-#             text =''
-#             for timezone_txt in value:
-#                 text += str(timezone_txt) + '\n' # \n = 改行文字
-#             # グループ毎にメッセージを送信
-#             await ctx.send(text) 
-
 @bot.command()
 async def set_timezone(ctx, new_timezone: str):
     if new_timezone in pytz.common_timezones:
@@ -123,12 +102,6 @@ async def set_dice(ctx,*args):
             return
     await ctx.send(dice)
 
-
-@bot.command(name='dice')
-async def show_dice(ctx):
-    await ctx.send(dice)
-
-
 @bot.command()
 async def ping(ctx):
     await ctx.send('PONG {0}'.format(
@@ -140,16 +113,20 @@ async def ping(ctx):
 @bot.command()
 async def toggle_channel(ctx):
     global CHANNEL_ID,channel
-    if CHANNEL_ID == 230589506154135562:
-        CHANNEL_ID = 407151800060346368
+    if CHANNEL_ID == 610568928233521152:
+        CHANNEL_ID = 618082304484442123
         channel = bot.get_channel(CHANNEL_ID)
         await ctx.send(channel.name + 'に変更しました。')
     elif CHANNEL_ID == 407151800060346368:
-        CHANNEL_ID = 235049495203676170
+        CHANNEL_ID = 769665765283463208
         channel = bot.get_channel(CHANNEL_ID)
         await ctx.send(channel.name + 'に変更しました。')
-    elif CHANNEL_ID == 235049495203676170:
-        CHANNEL_ID = 230589506154135562
+    elif CHANNEL_ID == 769665765283463208:
+        CHANNEL_ID = 610569245025239080
+        channel = bot.get_channel(CHANNEL_ID)
+        await ctx.send(channel.name + 'に変更しました。')
+    elif CHANNEL_ID == 610569245025239080:
+        CHANNEL_ID = 610568928233521152
         channel = bot.get_channel(CHANNEL_ID)
         await ctx.send(channel.name + 'に変更しました。')
 
@@ -182,13 +159,6 @@ async def test_join(ctx, *args):
         return
 
     await play_audio(filepath)
-
-@bot.command()
-async def TEMP(ctx):
-    Cmd = 'vcgencmd measure_temp'
-    result = subprocess.Popen(Cmd, shell=True,  stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-    CpuTemp  = result.communicate()
-    await ctx.send(CpuTemp)
 
 async def play_audio(filepath):
     global dice
