@@ -138,25 +138,25 @@ async def now_channel(ctx):
 async def test_join(ctx, *args):
     global dice
     filepath = ""
-    repeat = 12
-    if len(args) >= 1:
-        try:
-            repeat = int(args[0])
-        except:
-            await ctx.send('1-12の数字を入力してね')
-            return
-    else:
-        repeat = random.randint(1,12)
+    # repeat = 12
+    # if len(args) >= 1:
+    #     try:
+    #         repeat = int(args[0])
+    #     except:
+    #         await ctx.send('1-12の数字を入力してね')
+    #         return
+    # else:
+    #     repeat = random.randint(1,12)
     
-    if dice == 0:
-        filepath = SOUND_BASE_PATH + "uguisu.mp3"
-    elif 1<=repeat and repeat <= 12:
-        filepath = SOUND_BASE_PATH + \
-            '{0:02d}.mp3'.format(repeat)
-    else :
-        await ctx.send('1-12の数字を入力してね')
-        return
-
+    # if dice == 0:
+    #     filepath = SOUND_BASE_PATH + "uguisu.mp3"
+    # elif 1<=repeat and repeat <= 12:
+    #     filepath = SOUND_BASE_PATH + \
+    #         '{0:02d}.mp3'.format(repeat)
+    # else :
+    #     await ctx.send('1-12の数字を入力してね')
+    #     return
+    filepath = SOUND_BASE_PATH + "hato.mp3"
     await play_audio(filepath)
 
 async def play_audio(filepath):
