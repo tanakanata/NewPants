@@ -116,7 +116,7 @@ async def toggle_channel(ctx):
         CHANNEL_ID = 618082304484442123
         channel = bot.get_channel(CHANNEL_ID)
         await ctx.send(channel.name + 'に変更しました。')
-    elif CHANNEL_ID == 407151800060346368:
+    elif CHANNEL_ID == 618082304484442123:
         CHANNEL_ID = 769665765283463208
         channel = bot.get_channel(CHANNEL_ID)
         await ctx.send(channel.name + 'に変更しました。')
