@@ -9,7 +9,6 @@ import random
 import json
 import subprocess
 import pytz
-from mutagen.mp3 import MP3
 from discord.ext import commands, tasks
 import discord
 from pathlib import Path
@@ -190,7 +189,7 @@ async def loop():
             filepath = SOUND_BASE_PATH + "uguisu.mp3"
         else:
             # %I = 12時間表記♡
-            filepath = SOUND_BASE_PATH + '{}.mp3'.format(split_time[0])
+            filepath = SOUND_BASE_PATH + "hato.mp3"
         
         await play_audio(filepath)
 
