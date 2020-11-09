@@ -165,15 +165,13 @@ async def play_audio(filepath):
     audio = discord.FFmpegPCMAudio(filepath)
     voice = await discord.VoiceChannel.connect(channel)
     voice.play(audio)
-    #await asyncio.sleep(math.ceil(MP3(filepath).info.length))
 
     while voice.is_playing():
         await asyncio.sleep(1)
 
     audio.cleanup()
     await voice.disconnect()
-    
-    #await voice.disconnect()
+
     dice = random.randint(0, 9)
     return
 
