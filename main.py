@@ -135,6 +135,10 @@ async def now_channel(ctx):
     await ctx.send(channel.name + 'です。')
 
 @bot.command()
+async def SV(ctx):
+    await discord.VoiceChannel.connect(channel)
+
+@bot.command()
 async def test_join(ctx, *args):
     global dice
     filepath = ""
