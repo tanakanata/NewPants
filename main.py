@@ -19,6 +19,8 @@ tz = config.TZ
 client = discord.Client()
 CHANNEL_ID = int(config.VC_id1)
 SOUND_BASE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
+PRE_SOUND_BASE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/pre/'
+POST_SOUND_BASE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
 # -----------------------------------------------------------------------------------------
 
 tokyo_timezone = pytz.timezone('Asia/Tokyo')
@@ -28,11 +30,14 @@ bot = commands.Bot(command_prefix='_')
 
 @bot.event
 async def on_ready():
-    global channel,now,dice
+    global channel,now,dice,M_dice,D_dice,N_dice
     
     channel = bot.get_channel(CHANNEL_ID)
     now = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
     dice = random.randint(0, 9)
+    M_dice = random.randint(1,7)
+    D_dice = random.randint(8, 11)
+    N_dice = random.randint(12, 15)
 
     print('--------------------')
     print('ログインしました')
@@ -140,61 +145,64 @@ async def SV(ctx):
 
 @bot.command()
 async def test_join(ctx, *args):
-    global dice
-    filepath = ""
-    # repeat = 12
-    # if len(args) >= 1:
-    #     try:
-    #         repeat = int(args[0])
-    #     except:
-    #         await ctx.send('1-12の数字を入力してね')
-    #         return
-    # else:
-    #     repeat = random.randint(1,12)
-    
-    # if dice == 0:
-    #     filepath = SOUND_BASE_PATH + "uguisu.mp3"
-    # elif 1<=repeat and repeat <= 12:
-    #     filepath = SOUND_BASE_PATH + \
-    #         '{0:02d}.mp3'.format(repeat)
-    # else :
-    #     await ctx.send('1-12の数字を入力してね')
-    #     return
-    filepath = SOUND_BASE_PATH + "hato.mp3"
-    await play_audio(filepath)
+    global M_dice,D_dice,N_dice
+    now_datetime = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
+    split_time = now_datetime.split(':')
+    if '05' <= split_time[0] <= '10':
+        pre_filepath = PRE_SOUND_BASE_PATH + '{}.wav'.format(M_dice)
+        post_filepath = POST_SOUND_BASE_PATH + '{}.wav'.format(split_time[0])
+        M_dice = random.randint(1,7)
+    elif '11' <= split_time[0] <= '17':
+        pre_filepath = PRE_SOUND_BASE_PATH + '{}.wav'.format(D_dice)
+        post_filepath = POST_SOUND_BASE_PATH + '{}.wav'.format(split_time[0])
+        D_dice = random.randint(8, 11)
+    elif '18' <= split_time[0] <= '24' or '01' <= split_time[0] <= '04' :
+        pre_filepath = PRE_SOUND_BASE_PATH + '{}.wav'.format(N_dice)
+        post_filepath = POST_SOUND_BASE_PATH + '{}.wav'.format(split_time[0])
+        N_dice = random.randint(12, 15)
 
-async def play_audio(filepath):
-    global dice
-    print('play_audio {}'.format(filepath))
-    audio = discord.FFmpegPCMAudio(filepath)
+    await play_audio(pre_filepath,post_filepath)
+
+async def play_audio(pre_filepath,post_filepath):
+    audio1 = discord.FFmpegPCMAudio(pre_filepath)
+    audio2 = discord.FFmpegPCMAudio(post_filepath)
     voice = await discord.VoiceChannel.connect(channel)
-    voice.play(audio)
+    voice.play(audio1)
 
     while voice.is_playing():
         await asyncio.sleep(1)
+    
+    audio1.cleanup()
+    voice.play(audio2)
+    
+    while voice.is_playing():
+        await asyncio.sleep(1)
 
-    audio.cleanup()
+    audio2.cleanup()
     await voice.disconnect()
 
-    dice = random.randint(0, 9)
     return
 
 
 @tasks.loop(seconds=1)
 async def loop():
-    global dice
-    now_datetime = datetime.datetime.now(pytz.timezone(tz)).strftime('%I:%M:%S')
+    global M_dice,D_dice,N_dice
+    now_datetime = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
     split_time = now_datetime.split(':')
     if split_time[1] == '00' and split_time[2] == '00':
-#    if split_time[2] == '00':
-        if dice == 0:
-            filepath = SOUND_BASE_PATH + "uguisu.mp3"
-        else:
-            # %I = 12時間表記♡
-            filepath = SOUND_BASE_PATH + "hato.mp3"
-        
-        await play_audio(filepath)
-
+        if '05' <= split_time[0] <= '10':
+            pre_filepath = PRE_SOUND_BASE_PATH + '{}.wav'.format(M_dice)
+            post_filepath = POST_SOUND_BASE_PATH + '{}.wav'.format(split_time[0])
+            M_dice = random.randint(1,7)
+        elif '11' <= split_time[0] <= '17':
+            pre_filepath = PRE_SOUND_BASE_PATH + '{}.wav'.format(D_dice)
+            post_filepath = POST_SOUND_BASE_PATH + '{}.wav'.format(split_time[0])
+            D_dice = random.randint(8, 11)
+        elif '18' <= split_time[0] <= '24' or '01' <= split_time[0] <= '04' :
+            pre_filepath = PRE_SOUND_BASE_PATH + '{}.wav'.format(N_dice)
+            post_filepath = POST_SOUND_BASE_PATH + '{}.wav'.format(split_time[0])
+            N_dice = random.randint(12, 15)
+        await play_audio(pre_filepath,post_filepath)
 
 @bot.event
 async def on_message(message):
