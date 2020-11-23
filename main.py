@@ -54,12 +54,15 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(tz))
 
 @bot.command()
-async def boin(ctx, *arg):
+async def boin(ctx, arg):
+    await ctx.send('ちこちこく')
     if len(arg) == 0:
+        await ctx.send('文章を入力しろ　ボゲ　カス')
         return
     #漢字・ひらがなをカタカナに変換
     arg = str(arg)
-    mojiretsu = arg.translate(str.maketrans({"(":"", "'":"", ",":"" ,")":""}))
+    mojiretsu = arg.translate(str.maketrans({"(":"", "'":"", ",":"" ,")":"", '"':'', "ー":"～"}))
+    mojiretsu = mojiretsu.replace("||","").replace('"','')
     kakasi.setMode('J', 'K') 
     kakasi.setMode("H", "K") 
     conv = kakasi.getConverter()
@@ -68,16 +71,20 @@ async def boin(ctx, *arg):
     #大文字とゥの変換リスト
     large_tone = {
         'ア' :'ア', 'イ' :'イ', 'ウ' :'ウ', 'エ' :'エ', 'オ' :'オ',
+        'ァ' :'ア', 'ィ' :'イ', 'ゥ' :'ウ', 'ェ' :'エ', 'ォ' :'オ',
         'ヴ': 'ウ',
         'カ' :'ア', 'キ' :'イ', 'ク' :'ウ', 'ケ' :'エ', 'コ' :'オ',
         'サ' :'ア', 'シ' :'イ', 'ス' :'ウ', 'セ' :'エ', 'ソ' :'オ',
         'タ' :'ア', 'チ' :'イ', 'ツ' :'ウ', 'テ' :'エ', 'ト' :'オ',
+        'ッ' :'ウ',       
         'ナ' :'ア', 'ニ' :'イ', 'ヌ' :'ウ', 'ネ' :'エ', 'ノ' :'オ',
         'ハ' :'ア', 'ヒ' :'イ', 'フ' :'ウ', 'ヘ' :'エ', 'ホ' :'オ',
         'マ' :'ア', 'ミ' :'イ', 'ム' :'ウ', 'メ' :'エ', 'モ' :'オ',
         'ヤ' :'ア', 'ユ' :'ウ', 'ヨ' :'オ',
+        'ャ' :'ア', 'ュ' :'ウ', 'ョ' :'オ',
         'ラ' :'ア', 'リ' :'イ', 'ル' :'ウ', 'レ' :'エ', 'ロ' :'オ',
         'ワ' :'ア', 'ヲ' :'オ', 'ン' :'ン',
+        'ヮ' :'ア',
         'ガ' :'ア', 'ギ' :'イ', 'グ' :'ウ', 'ゲ' :'エ', 'ゴ' :'オ',
         'ザ' :'ア', 'ジ' :'イ', 'ズ' :'ウ', 'ゼ' :'エ', 'ゾ' :'オ',
         'ダ' :'ア', 'ヂ' :'イ', 'ヅ' :'ウ', 'デ' :'エ', 'ド' :'オ',
@@ -93,8 +100,8 @@ async def boin(ctx, *arg):
     text = ''.join(text)
 
     #残った小文字を母音に変換
-    for k,v in zip('ヮャュョ','ァァゥォ'):
-        text = text.replace(k,v)
+    # for k,v in zip('ヮャュョッ','アアウオウ'):
+    #     text = text.replace(k,v)
 
     await ctx.send(text)
 
