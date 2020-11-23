@@ -12,11 +12,13 @@ import pytz
 from discord.ext import commands, tasks
 import discord
 from pathlib import Path
+from pykakasi import kakasi
 
 # -----------------------------------------------------------------------------------------
 TOKEN = config.AT
 tz = config.TZ
 client = discord.Client()
+kakasi = kakasi()
 CHANNEL_ID = int(config.VC_id1)
 SOUND_BASE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
 PRE_SOUND_BASE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/pre/'
@@ -50,6 +52,48 @@ async def on_ready():
     print(dice)
     print('--------------------')
     await bot.change_presence(activity=discord.Game(tz))
+
+@bot.command()
+async def boin(ctx, *arg):
+    #漢字・ひらがなをカタカナに変換
+    mojiretsu = input('Enter')
+    kakasi.setMode('J', 'K') 
+    kakasi.setMode("H", "K") 
+    conv = kakasi.getConverter()
+    katakana = conv.do(mojiretsu)
+    text = katakana
+    #大文字とゥの変換リスト
+    large_tone = {
+        'ア' :'ア', 'イ' :'イ', 'ウ' :'ウ', 'エ' :'エ', 'オ' :'オ',
+        'ヴ': 'ウ',
+        'カ' :'ア', 'キ' :'イ', 'ク' :'ウ', 'ケ' :'エ', 'コ' :'オ',
+        'サ' :'ア', 'シ' :'イ', 'ス' :'ウ', 'セ' :'エ', 'ソ' :'オ',
+        'タ' :'ア', 'チ' :'イ', 'ツ' :'ウ', 'テ' :'エ', 'ト' :'オ',
+        'ナ' :'ア', 'ニ' :'イ', 'ヌ' :'ウ', 'ネ' :'エ', 'ノ' :'オ',
+        'ハ' :'ア', 'ヒ' :'イ', 'フ' :'ウ', 'ヘ' :'エ', 'ホ' :'オ',
+        'マ' :'ア', 'ミ' :'イ', 'ム' :'ウ', 'メ' :'エ', 'モ' :'オ',
+        'ヤ' :'ア', 'ユ' :'ウ', 'ヨ' :'オ',
+        'ラ' :'ア', 'リ' :'イ', 'ル' :'ウ', 'レ' :'エ', 'ロ' :'オ',
+        'ワ' :'ア', 'ヲ' :'オ', 'ン' :'ン',
+        'ガ' :'ア', 'ギ' :'イ', 'グ' :'ウ', 'ゲ' :'エ', 'ゴ' :'オ',
+        'ザ' :'ア', 'ジ' :'イ', 'ズ' :'ウ', 'ゼ' :'エ', 'ゾ' :'オ',
+        'ダ' :'ア', 'ヂ' :'イ', 'ヅ' :'ウ', 'デ' :'エ', 'ド' :'オ',
+        'バ' :'ア', 'ビ' :'イ', 'ブ' :'ウ', 'ベ' :'エ', 'ボ' :'オ',
+        'パ' :'ア', 'ピ' :'イ', 'プ' :'ウ', 'ペ' :'エ', 'ポ' :'オ'
+    }
+
+    # 大文字を母音に変換
+    text = list(text)
+    for i, v in enumerate(text):
+        if v in large_tone:
+            text[i] = large_tone[v]
+    text = ''.join(text)
+
+    #残った小文字を母音に変換
+    for k,v in zip('ヮャュョ','ァァゥォ'):
+        text = text.replace(k,v)
+
+    await ctx.send(text)
 
 @bot.command()
 async def nowtime(ctx):
