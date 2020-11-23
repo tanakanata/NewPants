@@ -55,6 +55,8 @@ async def on_ready():
 
 @bot.command()
 async def boin(ctx, *arg):
+    if len(arg) == 0:
+        return
     #漢字・ひらがなをカタカナに変換
     arg = str(arg)
     mojiretsu = arg.translate(str.maketrans({"(":"", "'":"", ",":"" ,")":""}))
