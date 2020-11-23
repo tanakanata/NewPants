@@ -56,7 +56,8 @@ async def on_ready():
 @bot.command()
 async def boin(ctx, *arg):
     #漢字・ひらがなをカタカナに変換
-    mojiretsu = input('Enter')
+    arg = str(arg)
+    mojiretsu = arg.translate(str.maketrans({"(":"", "'":"", ",":"" ,")":""}))
     kakasi.setMode('J', 'K') 
     kakasi.setMode("H", "K") 
     conv = kakasi.getConverter()
