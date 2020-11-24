@@ -21,8 +21,7 @@ client = discord.Client()
 kakasi = kakasi()
 CHANNEL_ID = int(config.VC_id1)
 SOUND_BASE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
-PRE_SOUND_BASE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/pre/'
-POST_SOUND_BASE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
+actorlist = ['Donglong','Chico']
 # -----------------------------------------------------------------------------------------
 
 tokyo_timezone = pytz.timezone('Asia/Tokyo')
@@ -55,9 +54,8 @@ async def on_ready():
 
 @bot.command()
 async def boin(ctx, arg):
-    await ctx.send('ちこちこく')
     if len(arg) == 0:
-        await ctx.send('文章を入力しろ　ボゲ　カス')
+        await ctx.send('文章を入力しろ　ボケ　カス　雑魚　無能　ハゲ　増毛')
         return
     #漢字・ひらがなをカタカナに変換
     arg = str(arg)
@@ -203,17 +201,20 @@ async def test_join(ctx, *args):
     now_datetime = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
     split_time = now_datetime.split(':')
     if '05' <= split_time[0] <= '10':
-        pre_filepath = PRE_SOUND_BASE_PATH + '{}.wav'.format(M_dice)
-        post_filepath = POST_SOUND_BASE_PATH + '{}.wav'.format(split_time[0])
+        pre_filepath =  SOUND_BASE_PATH + '{}/pre/{}.wav'.format(Vactor,M_dice)
+        post_filepath = SOUND_BASE_PATH + '{}/{}.wav'.format(Vactor,split_time[0])
         M_dice = random.randint(1,7)
+        Vactor = random.choice(actorlist)
     elif '11' <= split_time[0] <= '17':
-        pre_filepath = PRE_SOUND_BASE_PATH + '{}.wav'.format(D_dice)
-        post_filepath = POST_SOUND_BASE_PATH + '{}.wav'.format(split_time[0])
+        pre_filepath =  SOUND_BASE_PATH + '{}/pre/{}.wav'.format(Vactor,D_dice)
+        post_filepath = SOUND_BASE_PATH + '{}/{}.wav'.format(Vactor,split_time[0])
         D_dice = random.randint(8, 11)
-    elif '18' <= split_time[0] <= '24' or '01' <= split_time[0] <= '04' :
-        pre_filepath = PRE_SOUND_BASE_PATH + '{}.wav'.format(N_dice)
-        post_filepath = POST_SOUND_BASE_PATH + '{}.wav'.format(split_time[0])
+        Vactor = random.choice(actorlist)
+    elif '18' <= split_time[0] <= '24' or '00' <= split_time[0] <= '04' :
+        pre_filepath =  SOUND_BASE_PATH + '{}/pre/{}.wav'.format(Vactor,N_dice)
+        post_filepath = SOUND_BASE_PATH + '{}/{}.wav'.format(Vactor,split_time[0])
         N_dice = random.randint(12, 15)
+        Vactor = random.choice(actorlist)
 
     await play_audio(pre_filepath,post_filepath)
 
@@ -245,17 +246,21 @@ async def loop():
     split_time = now_datetime.split(':')
     if split_time[1] == '00' and split_time[2] == '00':
         if '05' <= split_time[0] <= '10':
-            pre_filepath = PRE_SOUND_BASE_PATH + '{}.wav'.format(M_dice)
-            post_filepath = POST_SOUND_BASE_PATH + '{}.wav'.format(split_time[0])
+            pre_filepath =  SOUND_BASE_PATH + '{}/pre/{}.wav'.format(Vactor,M_dice)
+            post_filepath = SOUND_BASE_PATH + '{}/{}.wav'.format(Vactor,split_time[0])
             M_dice = random.randint(1,7)
+            Vactor = random.choice(actorlist)
         elif '11' <= split_time[0] <= '17':
-            pre_filepath = PRE_SOUND_BASE_PATH + '{}.wav'.format(D_dice)
-            post_filepath = POST_SOUND_BASE_PATH + '{}.wav'.format(split_time[0])
+            pre_filepath =  SOUND_BASE_PATH + '{}/pre/{}.wav'.format(Vactor,D_dice)
+            post_filepath = SOUND_BASE_PATH + '{}/{}.wav'.format(Vactor,split_time[0])
             D_dice = random.randint(8, 11)
-        elif '18' <= split_time[0] <= '24' or '01' <= split_time[0] <= '04' :
-            pre_filepath = PRE_SOUND_BASE_PATH + '{}.wav'.format(N_dice)
-            post_filepath = POST_SOUND_BASE_PATH + '{}.wav'.format(split_time[0])
+            Vactor = random.choice(actorlist)
+        elif '18' <= split_time[0] <= '24' or '00' <= split_time[0] <= '04' :
+            pre_filepath =  SOUND_BASE_PATH + '{}/pre/{}.wav'.format(Vactor,N_dice)
+            post_filepath = SOUND_BASE_PATH + '{}/{}.wav'.format(Vactor,split_time[0])
             N_dice = random.randint(12, 15)
+            Vactor = random.choice(actorlist)
+
         await play_audio(pre_filepath,post_filepath)
 
 @bot.event
