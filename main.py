@@ -21,7 +21,6 @@ client = discord.Client()
 kakasi = kakasi()
 CHANNEL_ID = int(config.VC_id1)
 SOUND_BASE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
-actorlist = ['Donglong','Chico']
 # -----------------------------------------------------------------------------------------
 
 tokyo_timezone = pytz.timezone('Asia/Tokyo')
@@ -31,7 +30,7 @@ bot = commands.Bot(command_prefix='_')
 
 @bot.event
 async def on_ready():
-    global channel,now,dice,M_dice,D_dice,N_dice
+    global channel,now,dice,M_dice,D_dice,N_dice,actorlist
     
     channel = bot.get_channel(CHANNEL_ID)
     now = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
@@ -200,19 +199,29 @@ async def test_join(ctx, *args):
     global M_dice,D_dice,N_dice
     now_datetime = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
     split_time = now_datetime.split(':')
-    if '05' <= split_time[0] <= '10':
-        pre_filepath =  SOUND_BASE_PATH + '{}/pre/{}.wav'.format(Vactor,M_dice)
-        post_filepath = SOUND_BASE_PATH + '{}/{}.wav'.format(Vactor,split_time[0])
+    actorlist = ['Donglong','Chico']
+    Vactor = random.choice(actorlist)
+    args = str(args)
+    args = args.translate(str.maketrans({"(":"", "'":"", ",":"" ,")":""}))
+    print(args)
+    if '00' <= args <= '24':
+        jikoku = args
+    else:
+        jikoku = split_time[0]            
+
+    if '05' <= jikoku <= '10':
+        pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,M_dice)
+        post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,jikoku)
         M_dice = random.randint(1,7)
         Vactor = random.choice(actorlist)
-    elif '11' <= split_time[0] <= '17':
-        pre_filepath =  SOUND_BASE_PATH + '{}/pre/{}.wav'.format(Vactor,D_dice)
-        post_filepath = SOUND_BASE_PATH + '{}/{}.wav'.format(Vactor,split_time[0])
+    elif '11' <= jikoku <= '17':
+        pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,D_dice)
+        post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,jikoku)
         D_dice = random.randint(8, 11)
         Vactor = random.choice(actorlist)
-    elif '18' <= split_time[0] <= '24' or '00' <= split_time[0] <= '04' :
-        pre_filepath =  SOUND_BASE_PATH + '{}/pre/{}.wav'.format(Vactor,N_dice)
-        post_filepath = SOUND_BASE_PATH + '{}/{}.wav'.format(Vactor,split_time[0])
+    elif '18' <= jikoku <= '24' or '00' <= jikoku <= '04' :
+        pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,N_dice)
+        post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,jikoku)
         N_dice = random.randint(12, 15)
         Vactor = random.choice(actorlist)
 
@@ -244,20 +253,22 @@ async def loop():
     global M_dice,D_dice,N_dice
     now_datetime = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
     split_time = now_datetime.split(':')
+    actorlist = ['Donglong','Chico']
+    Vactor = random.choice(actorlist)
     if split_time[1] == '00' and split_time[2] == '00':
         if '05' <= split_time[0] <= '10':
-            pre_filepath =  SOUND_BASE_PATH + '{}/pre/{}.wav'.format(Vactor,M_dice)
-            post_filepath = SOUND_BASE_PATH + '{}/{}.wav'.format(Vactor,split_time[0])
+            pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,M_dice)
+            post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,split_time[0])
             M_dice = random.randint(1,7)
             Vactor = random.choice(actorlist)
         elif '11' <= split_time[0] <= '17':
-            pre_filepath =  SOUND_BASE_PATH + '{}/pre/{}.wav'.format(Vactor,D_dice)
-            post_filepath = SOUND_BASE_PATH + '{}/{}.wav'.format(Vactor,split_time[0])
+            pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,D_dice)
+            post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,split_time[0])
             D_dice = random.randint(8, 11)
             Vactor = random.choice(actorlist)
         elif '18' <= split_time[0] <= '24' or '00' <= split_time[0] <= '04' :
-            pre_filepath =  SOUND_BASE_PATH + '{}/pre/{}.wav'.format(Vactor,N_dice)
-            post_filepath = SOUND_BASE_PATH + '{}/{}.wav'.format(Vactor,split_time[0])
+            pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,N_dice)
+            post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,split_time[0])
             N_dice = random.randint(12, 15)
             Vactor = random.choice(actorlist)
 
