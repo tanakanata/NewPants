@@ -52,14 +52,15 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(tz))
 
 @bot.command()
-async def boin(ctx, arg):
+async def boin(ctx, *arg):
     if len(arg) == 0:
         await ctx.send('文章を入力しろ　ボケ　カス　雑魚　無能　ハゲ　増毛')
         return
     #漢字・ひらがなをカタカナに変換
     arg = str(arg)
-    mojiretsu = arg.translate(str.maketrans({"(":"", "'":"", ",":"" ,")":"", '"':'', "ー":"～"}))
-    mojiretsu = mojiretsu.replace("||","").replace('"','')
+    print(arg)
+    mojiretsu = arg.translate(str.maketrans({'"':'', "ー":"～"}))
+    mojiretsu = mojiretsu.replace("||","").replace('"','').replace("('","").replace("',)","").replace("')","").replace("', '"," ")
     kakasi.setMode('J', 'K') 
     kakasi.setMode("H", "K") 
     conv = kakasi.getConverter()
