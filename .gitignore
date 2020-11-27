@@ -1,0 +1,3 @@
+*.wav
+*.service
+__pycache__/config.cpython-36.pyc
