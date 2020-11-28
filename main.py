@@ -30,11 +30,10 @@ bot = commands.Bot(command_prefix='_')
 
 @bot.event
 async def on_ready():
-    global channel,now,dice,M_dice,D_dice,N_dice,actorlist
+    global channel,now,M_dice,D_dice,N_dice
     
     channel = bot.get_channel(CHANNEL_ID)
     now = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
-    dice = random.randint(0, 9)
     M_dice = random.randint(1,7)
     D_dice = random.randint(8, 11)
     N_dice = random.randint(12, 15)
@@ -59,7 +58,7 @@ async def boin(ctx, *arg):
     #漢字・ひらがなをカタカナに変換
     arg = str(arg)
     print(arg)
-    mojiretsu = arg.translate(str.maketrans({'"':'', "ー":"～"}))
+    mojiretsu = arg.translate(str.maketrans({'"':'', "ー":"～","ｰ":"～"}))
     mojiretsu = mojiretsu.replace("||","").replace('"','').replace("('","").replace("',)","").replace("')","").replace("', '"," ")
     kakasi.setMode('J', 'K') 
     kakasi.setMode("H", "K") 
@@ -165,16 +164,31 @@ async def set_timezone(ctx, new_timezone: str):
 
 
 @bot.command()
-async def dice(ctx,args):
-    if len(args) == 0:
-        dice = random.randint(0,9)
-    else:
+async def dice(ctx,*args):
+    if len(args) == 1:
         try:
-            dice = int(args[0])
+            atai = int(args[0])
         except:
-            await ctx.send('数字を入力してね')
+            await ctx.send('変なもの入力してんじゃねーぞ')
             return
-    await ctx.send(dice)
+    
+    else:
+        await ctx.send('使い方知ってる？？？？？？？？？')
+        return
+
+    if atai < 0:
+        await ctx.send('ダイスに負の値入れようとしてるの、普通に考えて頭逝ってますよ？')
+        return
+
+    if len(str(atai)) > 1900:
+        await ctx.send('Discordの文字数制限ってご存知ですか？？？？？？？？')
+        return
+    else:
+        kekka = random.randint(0,atai)
+        await ctx.send('はじめまして。NewPantsBotのダイス担当です。只今の結果は ' + str(kekka) + ' です。')
+
+    
+
 
 @bot.command()
 async def ping(ctx):
@@ -217,28 +231,37 @@ async def SV(ctx):
 async def test_join(ctx, *args):
     global M_dice,D_dice,N_dice
     now_datetime = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
-    split_time = now_datetime.split(':')
     actorlist = ['Donglong','Chico']
     Vactor = random.choice(actorlist)
-    args = str(args)
-    args = args.translate(str.maketrans({"(":"", "'":"", ",":"" ,")":""}))
-    print(args)
-    if '00' <= args <= '24':
-        jikoku = args
+    if len(args) == 1:
+        try:
+            jikoku = int(args[0])
+        except:
+            await ctx.send('引数間違えないでください！！！！！')
+            return
     else:
-        jikoku = split_time[0]            
+        await ctx.send('使い方知ってる？？？？？？？？？')
+        return
+        
+    if jikoku < 0:
+        await ctx.send('1日って0時から24時までってしってます？？？？？？？？')
+        return
 
-    if '05' <= jikoku <= '10':
+    if jikoku > 24:
+        await ctx.send('地球上では1日って24時間なんですよ。そんなことも知らないんですか？？？小学校からやり直したほうがいいですよ？？？？')
+        return  
+
+    if 5 <= jikoku <= 10:
         pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,M_dice)
         post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,jikoku)
         M_dice = random.randint(1,7)
         Vactor = random.choice(actorlist)
-    elif '11' <= jikoku <= '17':
+    elif 11 <= jikoku <= 17:
         pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,D_dice)
         post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,jikoku)
         D_dice = random.randint(8, 11)
         Vactor = random.choice(actorlist)
-    elif '18' <= jikoku <= '24' or '00' <= jikoku <= '04' :
+    elif 18 <= jikoku <= 24 or 0 <= jikoku <= 4 :
         pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,N_dice)
         post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,jikoku)
         N_dice = random.randint(12, 15)
