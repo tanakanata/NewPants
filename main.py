@@ -64,7 +64,8 @@ async def boin(ctx, *arg):
     kakasi.setMode("H", "K") 
     conv = kakasi.getConverter()
     katakana = conv.do(mojiretsu)
-    text = katakana
+    text = katakana.translate(str.maketrans({"ﾟ":"","ﾞ":""}))
+    print(katakana)
     #大文字とゥの変換リスト
     large_tone = {
         'ア' :'ア', 'イ' :'イ', 'ウ' :'ウ', 'エ' :'エ', 'オ' :'オ',
@@ -118,6 +119,9 @@ async def boin(ctx, *arg):
     #残った小文字を母音に変換
     # for k,v in zip('ヮャュョッ','アアウオウ'):
     #     text = text.replace(k,v)
+    if text == "":
+        await ctx.send('変換したら文字なくなちゃった (*ﾉω・*)ﾃﾍ')
+        return
 
     await ctx.send(text)
 
@@ -231,6 +235,7 @@ async def SV(ctx):
 async def test_join(ctx, *args):
     global M_dice,D_dice,N_dice
     now_datetime = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
+    split_time = now_datetime.split(':')
     actorlist = ['Donglong','Chico']
     Vactor = random.choice(actorlist)
     if len(args) == 1:
@@ -242,26 +247,30 @@ async def test_join(ctx, *args):
     else:
         await ctx.send('使い方知ってる？？？？？？？？？')
         return
-        
+    
     if jikoku < 0:
         await ctx.send('1日って0時から24時までってしってます？？？？？？？？')
         return
 
     if jikoku > 24:
         await ctx.send('地球上では1日って24時間なんですよ。そんなことも知らないんですか？？？小学校からやり直したほうがいいですよ？？？？')
-        return  
+        return 
 
-    if 5 <= jikoku <= 10:
+    jikoku = str(jikoku)
+    jikoku = jikoku.zfill(2)
+    print(jikoku)
+
+    if '05' <= jikoku <= '10':
         pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,M_dice)
         post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,jikoku)
         M_dice = random.randint(1,7)
         Vactor = random.choice(actorlist)
-    elif 11 <= jikoku <= 17:
+    elif '11' <= jikoku <= '17':
         pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,D_dice)
         post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,jikoku)
         D_dice = random.randint(8, 11)
         Vactor = random.choice(actorlist)
-    elif 18 <= jikoku <= 24 or 0 <= jikoku <= 4 :
+    elif '18' <= jikoku <= '24' or '00' <= jikoku <= '04' :
         pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,N_dice)
         post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,jikoku)
         N_dice = random.randint(12, 15)
