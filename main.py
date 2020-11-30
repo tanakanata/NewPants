@@ -238,7 +238,10 @@ async def test_join(ctx, *args):
     split_time = now_datetime.split(':')
     actorlist = ['Donglong','Chico']
     Vactor = random.choice(actorlist)
-    if len(args) == 1:
+    if len(args) == 0:
+        jikoku = int(split_time[0])
+
+    elif len(args) == 1:
         try:
             jikoku = int(args[0])
         except:
