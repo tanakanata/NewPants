@@ -1,4 +1,5 @@
 *.wav
 *.service
 /__pycache__
+/test
 config.py
