@@ -233,11 +233,12 @@ async def SV(ctx):
 
 @bot.command()
 async def test_join(ctx, *args):
-    global M_dice,D_dice,N_dice
+    global M_dice,D_dice,N_dice,r_message
     now_datetime = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
     split_time = now_datetime.split(':')
     actorlist = ['Donglong','Chico']
     Vactor = random.choice(actorlist)
+    r_message = ctx.message
     if len(args) == 0:
         jikoku = int(split_time[0])
 
@@ -285,8 +286,12 @@ async def play_audio(pre_filepath,post_filepath):
     audio1 = discord.FFmpegPCMAudio(pre_filepath)
     audio2 = discord.FFmpegPCMAudio(post_filepath)
     voice = await discord.VoiceChannel.connect(channel)
+    emoji = 'arrow_forward'
 
-    time.sleep(0.5)
+    while voice != None:
+        await asyncio.sleep(1)
+
+    asyncio.sleep(0.5)
 
     voice.play(audio1)
 
@@ -301,9 +306,13 @@ async def play_audio(pre_filepath,post_filepath):
 
     audio2.cleanup()
 
-    time.sleep(0.5)
+    asyncio.sleep(0.5)
 
     await voice.disconnect()
+
+    await r_message.add_reaction(emoji)
+
+    voice = None
 
     return
 
