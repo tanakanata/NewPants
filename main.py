@@ -285,6 +285,9 @@ async def play_audio(pre_filepath,post_filepath):
     audio1 = discord.FFmpegPCMAudio(pre_filepath)
     audio2 = discord.FFmpegPCMAudio(post_filepath)
     voice = await discord.VoiceChannel.connect(channel)
+
+    time.sleep(0.5)
+
     voice.play(audio1)
 
     while voice.is_playing():
@@ -297,6 +300,9 @@ async def play_audio(pre_filepath,post_filepath):
         await asyncio.sleep(1)
 
     audio2.cleanup()
+
+    time.sleep(0.5)
+
     await voice.disconnect()
 
     return
