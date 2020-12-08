@@ -21,6 +21,7 @@ client = discord.Client()
 kakasi = kakasi()
 CHANNEL_ID = int(config.VC_id1)
 SOUND_BASE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
+PLAYING = False
 # -----------------------------------------------------------------------------------------
 
 tokyo_timezone = pytz.timezone('Asia/Tokyo')
@@ -238,7 +239,7 @@ async def test_join(ctx, *args):
     split_time = now_datetime.split(':')
     actorlist = ['Donglong','Chico']
     Vactor = random.choice(actorlist)
-    r_message = ctx.message
+    
     if len(args) == 0:
         jikoku = int(split_time[0])
 
@@ -280,16 +281,27 @@ async def test_join(ctx, *args):
         N_dice = random.randint(12, 15)
         Vactor = random.choice(actorlist)
 
+    while(PLAYING):
+        await asyncio.sleep(1)
+        print('while')
+
+    r_message = ctx.message
+
     await play_audio(pre_filepath,post_filepath)
 
 async def play_audio(pre_filepath,post_filepath):
+    global PLAYING
     audio1 = discord.FFmpegPCMAudio(pre_filepath)
     audio2 = discord.FFmpegPCMAudio(post_filepath)
-    voice = await discord.VoiceChannel.connect(channel)
-    emoji = 'arrow_forward'
-
-    while voice != None:
+    emoji = '\N{BLACK RIGHT-POINTING TRIANGLE}'
+    
+    while(PLAYING):
         await asyncio.sleep(1)
+        print('while')
+
+    PLAYING = True
+
+    voice = await discord.VoiceChannel.connect(channel)
 
     asyncio.sleep(0.5)
 
@@ -310,9 +322,14 @@ async def play_audio(pre_filepath,post_filepath):
 
     await voice.disconnect()
 
-    await r_message.add_reaction(emoji)
+    try:
+        r_message
+        await r_message.add_reaction(emoji)
+    except NameError:
+        pass
 
-    voice = None
+    PLAYING = False
+
 
     return
 
@@ -324,7 +341,7 @@ async def loop():
     split_time = now_datetime.split(':')
     actorlist = ['Donglong','Chico']
     Vactor = random.choice(actorlist)
-    if split_time[1] == '00' and split_time[2] == '00':
+    if split_time[1] == '23' and split_time[2] == '00':
         if '05' <= split_time[0] <= '10':
             pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,M_dice)
             post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,split_time[0])
