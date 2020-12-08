@@ -341,7 +341,7 @@ async def loop():
     split_time = now_datetime.split(':')
     actorlist = ['Donglong','Chico']
     Vactor = random.choice(actorlist)
-    if split_time[1] == '23' and split_time[2] == '00':
+    if split_time[1] == '00' and split_time[2] == '00':
         if '05' <= split_time[0] <= '10':
             pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,M_dice)
             post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,split_time[0])
