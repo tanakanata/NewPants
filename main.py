@@ -26,7 +26,7 @@ PLAYING = False
 
 tokyo_timezone = pytz.timezone('Asia/Tokyo')
 
-bot = commands.Bot(command_prefix='_')
+bot = commands.Bot(command_prefix='!')
 # print(dir(bot))
 
 @bot.event
