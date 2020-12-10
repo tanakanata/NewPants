@@ -9,6 +9,8 @@ import random
 import json
 import subprocess
 import pytz
+import cv2
+import numpy as np
 from discord.ext import commands, tasks
 import discord
 from pathlib import Path
@@ -22,6 +24,7 @@ kakasi = kakasi()
 CHANNEL_ID = int(config.VC_id1)
 SOUND_BASE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
 PLAYING = False
+IMAGING = False
 # -----------------------------------------------------------------------------------------
 
 tokyo_timezone = pytz.timezone('Asia/Tokyo')
@@ -50,6 +53,62 @@ async def on_ready():
     print(dice)
     print('--------------------')
     await bot.change_presence(activity=discord.Game(tz))
+
+@bot.command()
+async def rgb(ctx,*args):
+    global IMAGING
+    RGB = []
+    img = np.zeros((400, 600, 3), np.uint8)
+
+    while(IMAGING):
+        await asyncio.sleep(1)
+
+    IMAGING = True
+
+    if len(args) == 3:
+        try:
+            Red = int(args[0])
+            Green = int(args[1])
+            Blue = int(args[2])
+        except:
+            await ctx.send('使い方調べてから出直して')
+            IMAGING =False
+            return
+
+    else:
+        await ctx.send('引数の数とあなたの頭がおかしいよ？')
+        IMAGING =False
+        return
+
+    if not 0 <= Red <= 255:
+        await ctx.send('0 ~ 255以外うけつけませ～んw')
+        IMAGING =False
+        return
+    elif not 0 <= Blue <= 255:
+        await ctx.send('0 ~ 255以外うけつけませ～んw')
+        IMAGING =False
+        return
+    elif not 0 <= Green <= 255:
+        await ctx.send('0 ~ 255以外うけつけませ～んw')
+        IMAGING =False
+        return
+
+    RGB.append(Blue)
+    RGB.append(Green)
+    RGB.append(Red)
+
+    img[:,:,0:3]=RGB
+    cv2.imwrite('temp/JPEG.png',img)
+
+    with open("temp/JPEG.png", "rb") as fh:
+        f = discord.File(fh, filename="JPEG.png")
+
+    await ctx.send(file=f)
+
+    os.remove('temp/JPEG.png')
+
+    IMAGING = False
+
 
 @bot.command()
 async def boin(ctx, *arg):
@@ -283,7 +342,6 @@ async def test_join(ctx, *args):
 
     while(PLAYING):
         await asyncio.sleep(1)
-        print('while')
 
     r_message = ctx.message
 
