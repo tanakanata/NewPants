@@ -58,18 +58,32 @@ async def on_ready():
 async def rgb(ctx,*args):
     global IMAGING
     RGB = []
-    img = np.zeros((400, 600, 3), np.uint8)
 
     while(IMAGING):
         await asyncio.sleep(1)
 
     IMAGING = True
 
+    print(args)
+    print(len(args))
     if len(args) == 3:
+        imgtype = 'png'
         try:
             Red = int(args[0])
             Green = int(args[1])
             Blue = int(args[2])
+        except:
+            await ctx.send('使い方調べてから出直して')
+            IMAGING =False
+            return
+
+    elif len(args) == 4:
+        imgtype = 'apng'
+        try:
+            Red = int(args[0])
+            Green = int(args[1])
+            Blue = int(args[2])
+            alpha = int(args[3])
         except:
             await ctx.send('使い方調べてから出直して')
             IMAGING =False
@@ -92,22 +106,50 @@ async def rgb(ctx,*args):
         await ctx.send('0 ~ 255以外うけつけませ～んw')
         IMAGING =False
         return
+    
+    if imgtype == 'png':
+        img = np.zeros((400, 600, 3), np.uint8)
+        RGB.append(Blue)
+        RGB.append(Green)
+        RGB.append(Red)
 
-    RGB.append(Blue)
-    RGB.append(Green)
-    RGB.append(Red)
+        img[:,:,0:3]=RGB
+        cv2.imwrite('temp/JPEG.png',img)
 
-    img[:,:,0:3]=RGB
-    cv2.imwrite('temp/JPEG.png',img)
+        with open("temp/JPEG.png", "rb") as fh:
+            f = discord.File(fh, filename="JPEG.png")
 
-    with open("temp/JPEG.png", "rb") as fh:
-        f = discord.File(fh, filename="JPEG.png")
+        await ctx.send(file=f)
 
-    await ctx.send(file=f)
+        os.remove('temp/JPEG.png')
 
-    os.remove('temp/JPEG.png')
+        IMAGING = False
 
-    IMAGING = False
+    if imgtype == 'apng':
+        img = np.zeros((400, 600, 4), np.uint8)
+        RGB.append(Blue)
+        RGB.append(Green)
+        RGB.append(Red)
+
+        if not 0 <= Red <= 255:
+            await ctx.send('0 ~ 255以外うけつけませ～んw')
+            IMAGING =False
+            return
+
+        RGB.append(alpha)
+
+        img[:,:,0:4]=RGB
+        cv2.imwrite('temp/GIF.png',img)
+
+        with open("temp/GIF.png", "rb") as fh:
+            f = discord.File(fh, filename="GIF.png")
+
+        await ctx.send(file=f)
+
+        os.remove('temp/GIF.png')
+
+        IMAGING = False
+
 
 
 @bot.command()
