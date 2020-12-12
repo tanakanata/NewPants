@@ -135,7 +135,7 @@ async def rgb(ctx,*args):
         RGB.append(Green)
         RGB.append(Red)
 
-        if not 0 <= Red <= 255:
+        if not 0 <= alpha <= 255:
             await ctx.send('0 ~ 255以外うけつけませ～んw')
             IMAGING =False
             return
