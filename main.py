@@ -59,6 +59,10 @@ async def rgb(ctx,*args):
     global IMAGING
     RGB = []
 
+    if len(args) == 0:
+        await ctx.send('!rgb <R> <G> <B> <α(省略可)>')
+        return
+
     while(IMAGING):
         await asyncio.sleep(1)
 
