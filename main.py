@@ -68,8 +68,6 @@ async def rgb(ctx,*args):
 
     IMAGING = True
 
-    print(args)
-    print(len(args))
     if len(args) == 3:
         imgtype = 'png'
         try:
@@ -163,7 +161,6 @@ async def boin(ctx, *arg):
         return
     #漢字・ひらがなをカタカナに変換
     arg = str(arg)
-    print(arg)
     mojiretsu = arg.translate(str.maketrans({'"':'', "ー":"～","ｰ":"～"}))
     mojiretsu = mojiretsu.replace("||","").replace('"','').replace("('","").replace("',)","").replace("')","").replace("', '"," ")
     kakasi.setMode('J', 'K') 
@@ -368,7 +365,6 @@ async def test_join(ctx, *args):
 
     jikoku = str(jikoku)
     jikoku = jikoku.zfill(2)
-    print(jikoku)
 
     if '05' <= jikoku <= '10':
         pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,M_dice)
@@ -401,7 +397,6 @@ async def play_audio(pre_filepath,post_filepath):
     
     while(PLAYING):
         await asyncio.sleep(1)
-        print('while')
 
     PLAYING = True
 
