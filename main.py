@@ -59,16 +59,19 @@ async def rgb(ctx,*args):
     global IMAGING
     RGB = []
 
-    if len(args) == 0:
-        await ctx.send('!rgb <R> <G> <B> <α(省略可)>')
-        return
-
     while(IMAGING):
         await asyncio.sleep(1)
 
     IMAGING = True
 
-    if len(args) == 3:
+    if len(args) == 0:
+        imgtype = 'png'
+        Red = random.randint(0,255)
+        Green = random.randint(0,255)
+        Blue = random.randint(0,255)
+
+
+    elif len(args) == 3:
         imgtype = 'png'
         try:
             Red = int(args[0])
@@ -121,7 +124,9 @@ async def rgb(ctx,*args):
         with open("temp/JPEG.png", "rb") as fh:
             f = discord.File(fh, filename="JPEG.png")
 
-        await ctx.send(file=f)
+        msg = 'R={0} G={1} B={2}'.format(Red,Green,Blue)
+
+        await ctx.send(content=msg, file=f)
 
         os.remove('temp/JPEG.png')
 
@@ -145,8 +150,9 @@ async def rgb(ctx,*args):
 
         with open("temp/GIF.png", "rb") as fh:
             f = discord.File(fh, filename="GIF.png")
+        msg = 'R={0} G={1} B={2} α={3}'.format(Red,Green,Blue,alpha)
 
-        await ctx.send(file=f)
+        await ctx.send(content=msg, file=f)
 
         os.remove('temp/GIF.png')
 
@@ -168,7 +174,6 @@ async def boin(ctx, *arg):
     conv = kakasi.getConverter()
     katakana = conv.do(mojiretsu)
     text = katakana.translate(str.maketrans({"ﾟ":"","ﾞ":""}))
-    print(katakana)
     #大文字とゥの変換リスト
     large_tone = {
         'ア' :'ア', 'イ' :'イ', 'ウ' :'ウ', 'エ' :'エ', 'オ' :'オ',
