@@ -341,7 +341,7 @@ async def SV(ctx):
 
 @bot.command()
 async def test_join(ctx, *args):
-    global M_dice,D_dice,N_dice,r_message
+    global M_dice,D_dice,N_dice,r_message,interval
     now_datetime = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
     split_time = now_datetime.split(':')
     actorlist = ['Donglong','Chico']
@@ -356,6 +356,15 @@ async def test_join(ctx, *args):
         except:
             await ctx.send('引数間違えないでください！！！！！')
             return
+    elif len(args) == 2:    
+        try:
+            jikoku = int(args[0])
+        except:
+            await ctx.send('引数間違えないでください！！！！！')
+            return
+        if args[1] == 'Donglong' or args[1] == 'Chico':
+            Vactor = args[1]
+
     else:
         await ctx.send('使い方知ってる？？？？？？？？？')
         return
@@ -367,6 +376,12 @@ async def test_join(ctx, *args):
     if jikoku > 24:
         await ctx.send('地球上では1日って24時間なんですよ。そんなことも知らないんですか？？？小学校からやり直したほうがいいですよ？？？？')
         return 
+
+    if Vactor == 'Donglong':
+        interval = 2
+    
+    else :
+        interval = 0.5
 
     jikoku = str(jikoku)
     jikoku = jikoku.zfill(2)
@@ -422,7 +437,7 @@ async def play_audio(pre_filepath,post_filepath):
 
     audio2.cleanup()
 
-    asyncio.sleep(0.5)
+    asyncio.sleep(interval)
 
     await voice.disconnect()
 
