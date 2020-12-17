@@ -126,7 +126,7 @@ async def rgb(ctx,*args):
         RGB.append(Green)
         RGB.append(Red)
         
-        html = '#{}{}{}'.format(hex(Red), hex(Green), hex(Blue))
+        html = '#{1}{2}{3}'.format(str(hex(Red)), str(hex(Green)), str(hex(Blue)))
         html = html.replace('0x', '')
 
         img[:,:,0:3]=RGB
@@ -135,7 +135,7 @@ async def rgb(ctx,*args):
         with open("temp/JPEG.png", "rb") as fh:
             f = discord.File(fh, filename="JPEG.png")
 
-        msg = 'R={0} G={1} B={2} \n {3}'.format(Red,Green,Blue,html)
+        msg = 'R={0} G={1} B={2} \n{3}'.format(Red,Green,Blue,html)
 
         await ctx.send(content=msg, file=f)
 
@@ -184,6 +184,9 @@ async def webcolor(ctx,*args):
         Green = random.randint(0,255)
         Blue = random.randint(0,255)
 
+        html = '#{1}{2}{3}'.format(str(hex(Red)), str(hex(Green)), str(hex(Blue)))
+        html = html.replace('0x', '')
+
     elif len(args) == 1:
         args = str(args)
         args = args.replace('#','')
@@ -198,28 +201,30 @@ async def webcolor(ctx,*args):
         Green = int(args[3:5],16)
         Blue = int(args[6:8],16)
 
-        img = np.zeros((400, 600, 3), np.uint8)
-        RGB.append(Blue)
-        RGB.append(Green)
-        RGB.append(Red)
-
-        img[:,:,0:3]=RGB
-        cv2.imwrite('temp/JPEG.png',img)
-
-        with open("temp/JPEG.png", "rb") as fh:
-            f = discord.File(fh, filename="JPEG.png")
-
-        msg = 'R={0} G={1} B={2} \n #{3}'.format(Red,Green,Blue,args)
-
-        await ctx.send(content=msg, file=f)
-
-        os.remove('temp/JPEG.png')
-
-        IMAGING = False
-
     else:
         await ctx.send('何かがおかしいよ？')
 
+
+    img = np.zeros((400, 600, 3), np.uint8)
+    RGB.append(Blue)
+    RGB.append(Green)
+    RGB.append(Red)
+
+    img[:,:,0:3]=RGB
+    cv2.imwrite('temp/JPEG.png',img)
+
+    with open("temp/JPEG.png", "rb") as fh:
+        f = discord.File(fh, filename="JPEG.png")
+
+    msg = 'R={0} G={1} B={2} \n#{3}'.format(Red,Green,Blue,args)
+
+    await ctx.send(content=msg, file=f)
+
+    os.remove('temp/JPEG.png')
+
+    IMAGING = False
+
+    
 
         
     
