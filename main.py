@@ -30,9 +30,9 @@ IMAGING = False
 
 tokyo_timezone = pytz.timezone('Asia/Tokyo')
 
-bot = commands.Bot(command_prefix='!')
-# print(dir(bot))
+bot = commands.Bot(command_prefix='!',help_command=None)
 
+bot.remove_command('help')
 @bot.event
 async def on_ready():
     global channel,now,M_dice,D_dice,N_dice
@@ -54,6 +54,13 @@ async def on_ready():
     print(dice)
     print('--------------------')
     await bot.change_presence(activity=discord.Game(tz))
+
+@bot.command()
+async def help(ctx):
+    with open("help.png", "rb") as fh:
+            f = discord.File(fh, filename="help.png")
+    
+    await ctx.send(file=f)
 
 @bot.command()
 async def rgb(ctx,*args):
@@ -516,11 +523,18 @@ async def play_audio(pre_filepath,post_filepath):
 
 @tasks.loop(seconds=1)
 async def loop():
-    global M_dice,D_dice,N_dice
+    global M_dice,D_dice,N_dice,interval
     now_datetime = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
     split_time = now_datetime.split(':')
     actorlist = ['Donglong','Chico']
     Vactor = random.choice(actorlist)
+
+  if Vactor == 'Donglong':
+        interval = 2
+    
+    else :
+        interval = 0.5
+
     if split_time[1] == '00' and split_time[2] == '00':
         if '05' <= split_time[0] <= '10':
             pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,M_dice)
