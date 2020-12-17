@@ -9,6 +9,7 @@ import random
 import json
 import subprocess
 import pytz
+import re
 import cv2
 import numpy as np
 from discord.ext import commands, tasks
@@ -162,7 +163,59 @@ async def rgb(ctx,*args):
         IMAGING = False
 
 @bot.command
-async def webcolor(ctx,*args)
+async def webcolor(ctx,*args):
+    global IMAGING
+    RGB = []
+    
+    while(IMAGING):
+        await asyncio.sleep(1)
+
+    IMAGING = True
+
+    if len(args) == 0:
+        Red = random.randint(0,255)
+        Green = random.randint(0,255)
+        Blue = random.randint(0,255)
+
+    elif len(args) == 1:
+        args = str(args)
+        args = args.replace('#','')
+
+        m = re.fullmatch(r'^([0-9]|[a-fA-F]){6}$',args)
+
+        if m == None:
+            await ctx.send('は？')
+            return
+        
+        Red = int(args[0:2],16)
+        Green = int(args[3:5],16)
+        Blue = int(args[6:8],16)
+
+        img = np.zeros((400, 600, 3), np.uint8)
+        RGB.append(Blue)
+        RGB.append(Green)
+        RGB.append(Red)
+
+        img[:,:,0:3]=RGB
+        cv2.imwrite('temp/JPEG.png',img)
+
+        with open("temp/JPEG.png", "rb") as fh:
+            f = discord.File(fh, filename="JPEG.png")
+
+        msg = 'R={0} G={1} B={2} \n #{3}'.format(Red,Green,Blue,args)
+
+        await ctx.send(content=msg, file=f)
+
+        os.remove('temp/JPEG.png')
+
+        IMAGING = False
+
+    else:
+        await ctx.send('何かがおかしいよ？')
+
+
+        
+    
 
 @bot.command()
 async def boin(ctx, *arg):
