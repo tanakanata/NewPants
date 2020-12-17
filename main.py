@@ -117,6 +117,9 @@ async def rgb(ctx,*args):
         RGB.append(Blue)
         RGB.append(Green)
         RGB.append(Red)
+        
+        html = '#{}{}{}'.format(hex(Red), hex(Green), hex(Blue))
+        html = color_code.replace('0x', '')
 
         img[:,:,0:3]=RGB
         cv2.imwrite('temp/JPEG.png',img)
@@ -124,7 +127,7 @@ async def rgb(ctx,*args):
         with open("temp/JPEG.png", "rb") as fh:
             f = discord.File(fh, filename="JPEG.png")
 
-        msg = 'R={0} G={1} B={2}'.format(Red,Green,Blue)
+        msg = 'R={0} G={1} B={2} \n {3}'.format(Red,Green,Blue,html)
 
         await ctx.send(content=msg, file=f)
 
@@ -158,7 +161,8 @@ async def rgb(ctx,*args):
 
         IMAGING = False
 
-
+@bot.command
+async def webcolor(ctx,*args)
 
 @bot.command()
 async def boin(ctx, *arg):
@@ -322,6 +326,10 @@ async def toggle_channel(ctx):
         channel = bot.get_channel(CHANNEL_ID)
         await ctx.send(channel.name + 'に変更しました。')
     elif CHANNEL_ID == 769665765283463208:
+        CHANNEL_ID = 788347573479407616
+        channel = bot.get_channel(CHANNEL_ID)
+        await ctx.send(channel.name + 'に変更しました。')
+    elif CHANNEL_ID == 788347573479407616:
         CHANNEL_ID = 610569245025239080
         channel = bot.get_channel(CHANNEL_ID)
         await ctx.send(channel.name + 'に変更しました。')
