@@ -127,7 +127,7 @@ async def rgb(ctx,*args):
         RGB.append(Red)
         
         html = '#{}{}{}'.format(hex(Red), hex(Green), hex(Blue))
-        html = color_code.replace('0x', '')
+        html = html.replace('0x', '')
 
         img[:,:,0:3]=RGB
         cv2.imwrite('temp/JPEG.png',img)
@@ -529,7 +529,7 @@ async def loop():
     actorlist = ['Donglong','Chico']
     Vactor = random.choice(actorlist)
 
-  if Vactor == 'Donglong':
+    if Vactor == 'Donglong':
         interval = 2
     
     else :
