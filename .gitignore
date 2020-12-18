@@ -3,3 +3,4 @@
 /__pycache__
 /test
 config.py
+.vscode/settings.json
