@@ -130,7 +130,7 @@ async def rgb(ctx,*args):
         H_Green = '{:02X}'.format(Green)
         H_Red = '{:02X}'.format(Red)
 
-        html = '#{0}{1}{2}'.format(H_Red,H_Blue,H_Green)
+        html = '#{0}{1}{2}'.format(H_Red,H_Green,H_Blue)
 
         img[:,:,0:3]=RGB
         cv2.imwrite('temp/JPEG.png',img)
@@ -191,7 +191,7 @@ async def webcolor(ctx,*args):
         H_Green = '{:02X}'.format(Green)
         H_Red = '{:02X}'.format(Red)
 
-        html = '{0}{1}{2}'.format(H_Red,H_Blue,H_Green)
+        html = '{0}{1}{2}'.format(H_Red,H_Green,H_Blue)
 
     elif len(args) == 1:
         args = str(args[0])
