@@ -10,6 +10,7 @@ import json
 import subprocess
 import pytz
 import re
+import requests
 import cv2
 import numpy as np
 from discord.ext import commands, tasks
@@ -26,6 +27,7 @@ CHANNEL_ID = int(config.VC_id1)
 SOUND_BASE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
 PLAYING = False
 IMAGING = False
+Flipping = False
 # -----------------------------------------------------------------------------------------
 
 tokyo_timezone = pytz.timezone('Asia/Tokyo')
@@ -61,6 +63,68 @@ async def help(ctx):
             f = discord.File(fh, filename="help.png")
     
     await ctx.send(file=f)
+
+@bot.command()
+async def flip(ctx,mode = 'n'):
+    global Flipping
+    try:
+        img_url = ctx.message.attachments[0].url
+        file_name = ctx.message.attachments[0].filename   
+    except:
+        await ctx.send('画像が足りないよ？')
+        return
+
+    if mode == 'h':
+        md = 1
+    elif mode == 'v':
+        md = 0
+    elif mode == 'vh' or mode == 'hv':
+        md = -1
+    else:
+        await ctx.send('モードを指定してね \n上下 : v\n左右 : h\n上下左右 : vh or hv')
+        return
+
+    while(Flipping):
+        await asyncio.sleep(1)
+
+    Flipping = True
+
+    tmp_img_name = 'temp/{0}'.format(file_name)
+    
+    r = requests.get(img_url)
+    if r.status_code == 200:
+        with open(tmp_img_name, 'wb') as f:
+            f.write(r.content)
+
+    img_name = 'temp/flip/{0}'.format(file_name)
+
+    img = cv2.imread(tmp_img_name)
+
+    flip_img = cv2.flip(img, md)
+    try:
+        cv2.imwrite(img_name,flip_img)
+    except:
+        await ctx.send('対応してないファイルだよ？')
+        Flipping = False
+        return
+
+
+    with open(img_name, "rb") as fh:
+            f = discord.File(fh, filename=file_name)
+
+    await ctx.send(content='でけた', file=f)
+
+    Flipping = False
+
+    os.remove(img_name)
+    os.remove(tmp_img_name)
+
+
+def download_img(img_url, file_name):
+    r = requests.get(img_url, stream=True)
+    if r.status_code == 200:
+        with open(file_name, 'wb') as f:
+            f.write(r.content)
 
 @bot.command()
 async def rgb(ctx,*args):
