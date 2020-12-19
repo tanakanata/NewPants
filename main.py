@@ -53,7 +53,6 @@ async def on_ready():
     print('起動時刻')
     print(config.TZ)
     print(now)
-    print(dice)
     print('--------------------')
     await bot.change_presence(activity=discord.Game(tz))
 
