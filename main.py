@@ -54,6 +54,7 @@ async def on_ready():
     print(config.TZ)
     print(now)
     print('--------------------')
+    print('#1234#123'.replace('#',''))
     await bot.change_presence(activity=discord.Game(tz))
 
 @bot.command()
@@ -236,10 +237,10 @@ async def rgb(ctx,*args):
         IMAGING = False
 
 @bot.command()
-async def webcolor(ctx,*args):
+async def color(ctx,*args):
     global IMAGING
     RGB = []
-    
+    print(args)
     while(IMAGING):
         await asyncio.sleep(1)
 
@@ -257,17 +258,20 @@ async def webcolor(ctx,*args):
         html = '{0}{1}{2}'.format(H_Red,H_Green,H_Blue)
 
     elif len(args) == 1:
-        args = str(args[0])
-        html = args.replace('#','')
+        print(args[0])
+        color = str(args[0])
+        print(args)
+        html = color.replace('#','')
+        print(html)
 
         if re.fullmatch(r'([0-9a-fA-F]){6}',html) == None:
             await ctx.send('は？')
             IMAGING = False
             return
         
-        Red = int(args[0:2],16)
-        Green = int(args[2:4],16)
-        Blue = int(args[4:6],16)
+        Red = int(html[0:2],16)
+        Green = int(html[2:4],16)
+        Blue = int(html[4:6],16)
 
 
     else:
