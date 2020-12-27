@@ -54,7 +54,6 @@ async def on_ready():
     print(config.TZ)
     print(now)
     print('--------------------')
-    print('#1234#123'.replace('#',''))
     await bot.change_presence(activity=discord.Game(tz))
 
 @bot.command()
@@ -98,6 +97,13 @@ async def flip(ctx,mode = 'n'):
 
     img_name = 'temp/flip/{0}'.format(file_name)
 
+    tmp_size = os.path.getsize(tmp_img_name)
+    if tmp_size > 8388608:
+        await ctx.send('は？')
+        os.remove(tmp_img_name)
+        return
+
+
     img = cv2.imread(tmp_img_name)
 
     flip_img = cv2.flip(img, md)
@@ -108,6 +114,12 @@ async def flip(ctx,mode = 'n'):
         Flipping = False
         return
 
+    flip_size = os.path.getsize(img_name)
+    if flip_size > 8178892:
+        await ctx.send('8M超えました。')
+        os.remove(img_name)
+        os.remove(tmp_img_name)
+        return
 
     with open(img_name, "rb") as fh:
             f = discord.File(fh, filename=file_name)
@@ -489,8 +501,9 @@ async def SV(ctx):
 
 @bot.command()
 async def test_join(ctx, *args):
-    global M_dice,D_dice,N_dice,r_message,interval
+    global M_dice,D_dice,N_dice,r_message,interval,Vactor
     now_datetime = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
+    today = datetime.datetime.now(pytz.timezone(tz)).strftime('%m%d')
     split_time = now_datetime.split(':')
     actorlist = ['Donglong','Chico']
     Vactor = random.choice(actorlist)
@@ -533,6 +546,7 @@ async def test_join(ctx, *args):
 
     jikoku = str(jikoku)
     jikoku = jikoku.zfill(2)
+    V1 = Vactor
 
     if '05' <= jikoku <= '10':
         pre_filepath =  SOUND_BASE_PATH + '{0}/pre/{1}.wav'.format(Vactor,M_dice)
@@ -549,6 +563,10 @@ async def test_join(ctx, *args):
         post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,jikoku)
         N_dice = random.randint(12, 15)
         Vactor = random.choice(actorlist)
+
+    if today == '1225' and V1 == 'Donglong':
+        pre_filepath = SOUND_BASE_PATH + 'Donglong/me.wav'
+
 
     while(PLAYING):
         await asyncio.sleep(1)
@@ -600,11 +618,21 @@ async def play_audio(pre_filepath,post_filepath):
 
     return
 
+@bot.command()
+async def test(ctx):
+    guild = bot.get_guild(610568927768084499)
+    textch = guild.text_channels
+    vcch = guild.voice_channels
+    chuwa = bot.get_channel(610568928233521152)
+    vcmem = chuwa.members
+    await ctx.send(vcmem)
+
 
 @tasks.loop(seconds=1)
 async def loop():
-    global M_dice,D_dice,N_dice,interval
+    global M_dice,D_dice,N_dice,interval,Vactor
     now_datetime = datetime.datetime.now(pytz.timezone(tz)).strftime('%H:%M:%S')
+    today = datetime.datetime.now(pytz.timezone(tz)).strftime('%m%d')
     split_time = now_datetime.split(':')
     actorlist = ['Donglong','Chico']
     Vactor = random.choice(actorlist)
@@ -614,6 +642,8 @@ async def loop():
     
     else :
         interval = 0.5
+
+    V1 = Vactor
 
     if split_time[1] == '00' and split_time[2] == '00':
         if '05' <= split_time[0] <= '10':
@@ -631,6 +661,9 @@ async def loop():
             post_filepath = SOUND_BASE_PATH + '{0}/{1}.wav'.format(Vactor,split_time[0])
             N_dice = random.randint(12, 15)
             Vactor = random.choice(actorlist)
+
+        if today == '1225' and V1 == 'Donglong':
+            pre_filepath = SOUND_BASE_PATH + 'Donglong/me.wav'
 
         await play_audio(pre_filepath,post_filepath)
 
