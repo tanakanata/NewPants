@@ -28,11 +28,12 @@ SOUND_BASE_PATH = os.path.dirname(os.path.abspath(__file__)) + '/'
 PLAYING = False
 IMAGING = False
 Flipping = False
+intents=discord.Intents.all()
 # -----------------------------------------------------------------------------------------
 
 tokyo_timezone = pytz.timezone('Asia/Tokyo')
 
-bot = commands.Bot(command_prefix='!',help_command=None)
+bot = commands.Bot(command_prefix='!',help_command=None,intents=intents)
 
 bot.remove_command('help')
 @bot.event
@@ -620,12 +621,11 @@ async def play_audio(pre_filepath,post_filepath):
 
 @bot.command()
 async def test(ctx):
-    guild = bot.get_guild(610568927768084499)
-    textch = guild.text_channels
-    vcch = guild.voice_channels
-    chuwa = bot.get_channel(610568928233521152)
-    vcmem = chuwa.members
-    await ctx.send(vcmem)
+    # guild = bot.get_guild(610568927768084499)
+    # textch = guild.text_channels
+    # vcch = guild.voice_channels
+    chuwa = bot.get_channel(CHANNEL_ID)
+    await ctx.send(chuwa.members)
 
 
 @tasks.loop(seconds=1)
