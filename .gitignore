@@ -1,7 +1,6 @@
 *.wav
 *.service
 /__pycache__
-/test
 /temp
 config.py
 .vscode/settings.json
