@@ -51,7 +51,7 @@ class Other(commands.Cog):
             ).strftime('%Y-%m-%d %H:%M:%S.%f')
         ))
 
-   @commands.Cog.listener(name='on_message')
+    @commands.Cog.listener(name='on_message')
     async def edit_ping(self, message):
         if message.content.startswith('PONG ') and message.author.id == self.bot.user.id:
             time_now = message.content.replace('PONG ', '')
