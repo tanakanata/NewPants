@@ -8,7 +8,7 @@ intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix='!', help_command=None, intents=intents)
 
-bot.load_extension('vote')
+bot.load_extension('Cogs.other')
 
 adminlist = [227845640661499905, 713388740990468097, 237261228781600768]
 
