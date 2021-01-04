@@ -7,10 +7,10 @@ from discord.ext import commands
 class Other(commands.Cog):
     def __init__(self, bot: commands.bot):
         self.bot = bot
-        self.bot.load_extension('boin')
-        self.bot.load_extension('color')
-        self.bot.load_extension('hato')
-        self.bot.load_extension('image')
+        self.bot.load_extension('ColorImaging')
+        self.bot.load_extension('Image')
+        self.bot.load_extension('Jihou')
+        self.bot.load_extension('Kotoba')
 
     @commands.command()
     async def help(self, ctx):
