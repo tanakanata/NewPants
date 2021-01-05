@@ -1,6 +1,7 @@
 import discord
 import random
 import datetime
+import pytz
 from discord.ext import commands
 
 
@@ -43,7 +44,7 @@ class Other(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
         await ctx.send('PONG {0}'.format(
-            tokyo_timezone.localize(
+            pytz.timezone('Asia/Tokyo').localize(
                 (ctx.message.created_at + datetime.timedelta(hours=9))
             ).strftime('%Y-%m-%d %H:%M:%S.%f')
         ))
@@ -52,10 +53,10 @@ class Other(commands.Cog):
     async def edit_ping(self, message):
         if message.content.startswith('PONG ') and message.author.id == self.bot.user.id:
             time_now = message.content.replace('PONG ', '')
-            ping_time = tokyo_timezone.localize(
+            ping_time = pytz.timezone('Asia/Tokyo').localize(
                 datetime.datetime.strptime(time_now, '%Y-%m-%d %H:%M:%S.%f'))
-            post_time = tokyo_timezone.localize(message.created_at +
-                                                datetime.timedelta(hours=9))
+            post_time = pytz.timezone('Asia/Tokyo').localize(message.created_at +
+                                                             datetime.timedelta(hours=9))
             diff_time = post_time - ping_time
             await message.edit(content='PONG({0}ms)'.format((diff_time.seconds * 1000) + int(str(diff_time.microseconds)[:3])))
 
