@@ -13,7 +13,6 @@ class ColorImaging(commands.Cog):
         print('ColorImaging OK')
         self.bot = bot
         self.imaging = False
-        
 
     @commands.command()
     async def rgb(self, ctx, *args):
@@ -126,7 +125,6 @@ class ColorImaging(commands.Cog):
     @commands.command()
     async def color(self, ctx, *args):
         RGB = []
-        print(args)
         while(self.imaging):
             await asyncio.sleep(1)
 
@@ -144,11 +142,8 @@ class ColorImaging(commands.Cog):
             html = '{0}{1}{2}'.format(H_Red, H_Green, H_Blue)
 
         elif len(args) == 1:
-            print(args[0])
             color = str(args[0])
-            print(args)
             html = color.replace('#', '')
-            print(html)
 
             if re.fullmatch(r'([0-9a-fA-F]){6}', html) == '':
                 await ctx.send('は？')
