@@ -6,11 +6,8 @@ from discord.ext import commands
 
 class Other(commands.Cog):
     def __init__(self, bot: commands.bot):
+        print('Other OK')
         self.bot = bot
-        self.bot.load_extension('ColorImaging')
-        self.bot.load_extension('Image')
-        self.bot.load_extension('Jihou')
-        self.bot.load_extension('Kotoba')
 
     @commands.command()
     async def help(self, ctx):

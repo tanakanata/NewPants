@@ -8,7 +8,7 @@ intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix='!', help_command=None, intents=intents)
 
-bot.load_extension('Cogs.other')
+cog_list =['ColorImaging','Image','Jihou','Kotoba']
 
 adminlist = [227845640661499905, 713388740990468097, 237261228781600768]
 
@@ -36,5 +36,10 @@ async def shutdown(ctx):
         bot.clear()
     else:
         await ctx.send("You do not own this bot!")
+
+if __name__ == '__main__':
+    for cog in cog_list:
+        name = f'Cogs.{cog}'
+        bot.load_extension(name)
 
 bot.run(TOKEN)

@@ -4,6 +4,7 @@ from pykakasi import kakasi
 
 class Kotoba(commands.Cog):
     def __init__(self, bot: commands.Bot):
+        print('Ktoba OK')
         self.bot = bot
         self.kakasi = kakasi()
 
