@@ -8,7 +8,7 @@ intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix='!', help_command=None, intents=intents)
 
-cog_list =['ColorImaging','Image','Jihou','Kotoba']
+cog_list = ['ColorImaging', 'Image', 'Jihou', 'Kotoba', 'Other']
 
 adminlist = [227845640661499905, 713388740990468097, 237261228781600768]
 
@@ -18,9 +18,11 @@ async def on_ready():
     print('Ready')
 
 
-@bot.command()
+@bot.command(aliases=['f5', 'F5', 'rld'])
 async def reload(ctx):
-    bot.reload_extension('vote')
+    for cog in cog_list:
+        name = f'Cogs.{cog}'
+        bot.reload_extension(name)
     await ctx.send('reload')
 
 
