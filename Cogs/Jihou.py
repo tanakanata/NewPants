@@ -11,6 +11,7 @@ class Jihou(commands.Cog):
     """時報関連"""
 
     def __init__(self, bot: commands.bot):
+        print('Jihou OK')
         self.bot = bot
         self.guild_id = 610568927768084499
         self.channel_id = None
@@ -30,8 +31,8 @@ class Jihou(commands.Cog):
         self.playing = False
         self.interval = None
         self.r_message = None
-        await bot.change_presence(activity=discord.Game(self.time_zone))
-
+        iinitial_setting()
+        
     def iinitial_setting(self):
         self.guild = self.bot.get_guild(self.guild_id)
         LIST = self.guild.voice_channels
@@ -39,6 +40,10 @@ class Jihou(commands.Cog):
             self.channel_list.append(c_id)
 
         self.channel_count = len(self.channel_list)
+        await self.ebot.change_presence(
+            activity=discord.Game(self.time_zone))
+
+
 
     @commands.command()
     async def nowtime(self, ctx):

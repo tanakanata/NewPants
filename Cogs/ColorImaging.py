@@ -10,8 +10,10 @@ import numpy as np
 
 class ColorImaging(commands.Cog):
     def __init__(self, bot: commands.bot):
+        print('ColorImaging OK')
         self.bot = bot
         self.imaging = False
+        
 
     @commands.command()
     async def rgb(self, ctx, *args):
