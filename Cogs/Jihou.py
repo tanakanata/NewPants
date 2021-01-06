@@ -3,6 +3,7 @@ import datetime
 import os
 import random
 import pytz
+import time
 from discord.ext import commands, tasks
 import discord
 
@@ -17,7 +18,7 @@ class Jihou(commands.Cog):
         self.channel_id = None
         self.guild = None
         self.channel = None
-        self.channel_list = None
+        self.channel_list = []
         self.channel_index = 1
         self.channel_count = None
         self.channel = None
@@ -31,29 +32,34 @@ class Jihou(commands.Cog):
         self.playing = False
         self.interval = None
         self.r_message = None
-        iinitial_setting()
-        
-    def iinitial_setting(self):
-        self.guild = self.bot.get_guild(self.guild_id)
-        LIST = self.guild.voice_channels
-        for c_id in LIST:
-            self.channel_list.append(c_id)
+        self.initialize()
 
+    def initialize(self):
+        time.sleep(10)
+        self.guild = self.bot.get_guild(self.guild_id)
+        LIST1 = self.guild.voice_channels
+        for c_list in LIST1:  #
+            self.channel_list.append(c_list.id)
         self.channel_count = len(self.channel_list)
-        await self.ebot.change_presence(
+        self.channel_count = self.channel_count - 1
+        self.channel_id = self.channel_list[0]
+        print(self.channel_list)
+        print(self.channel_count)
+
+    @commands.Cog.listener(name='on_ready')
+    async def change_presence(self):
+        await self.bot.change_presence(
             activity=discord.Game(self.time_zone))
 
-
-
-    @commands.command()
+    @ commands.command()
     async def nowtime(self, ctx):
         await ctx.send(self.now)
 
-    @commands.command()
+    @ commands.command()
     async def timezone(self, ctx):
         await ctx.send(self.time_zone)
 
-    @commands.command()
+    @ commands.command()
     async def list_timezone(self, ctx):
         timeZoneList = pytz.common_timezones
         timeZoneListJoined = '\n'.join(timeZoneList)
@@ -75,11 +81,11 @@ class Jihou(commands.Cog):
 
             await ctx.send(f'```{partMessageBody}```')
 
-    @commands.command()
+    @ commands.command()
     async def set_timezone(self, ctx, new_timezone: str):
         if new_timezone in pytz.common_timezones:
             self.time_zone = new_timezone
-            self.now = self.datetime.datetime.now(
+            self.now = datetime.datetime.now(
                 pytz.timezone(self.time_zone)).strftime('%H:%M:%S')
             await ctx.send('新しいタイムゾーンを' + self.time_zone + 'にセットしました')
             await self.bot.change_presence(
@@ -87,23 +93,28 @@ class Jihou(commands.Cog):
         else:
             await ctx.send("そんなもの存在しませ〜んw")
 
-    @commands.command()
+    @ commands.command()
     async def toggle_channel(self, ctx):
         self.channel_id = self.channel_list[self.channel_index]
         self.channel = self.bot.get_channel(self.channel_id)
         await ctx.send(self.channel.name + 'に変更しました。')
 
-        if self.channel_index < self.channel_count:
+        if self.channel_index == self.channel_count:
             self.channel_index = 0
+            print('True')
+            print(self.channel_index)
         else:
             self.channel_index = self.channel_index + 1
+            print('False')
+            print(self.channel_index)
+            print(self.channel_count)
 
-    @commands.command()
+    @ commands.command()
     async def now_channel(self, ctx):
         global channel
         await ctx.send(self.channel.name + 'です。')
 
-    @commands.command()
+    @ commands.command()
     async def SV(self, ctx):
         await discord.VoiceChannel.connect(self.channel)
 
@@ -147,7 +158,7 @@ class Jihou(commands.Cog):
 
         return
 
-    @commands.command()
+    @ commands.command()
     async def test_join(self, ctx, *args):
         now_datetime = datetime.datetime.now(
             pytz.timezone(self.time_zone)).strftime('%H:%M:%S')
@@ -229,9 +240,9 @@ class Jihou(commands.Cog):
 
         self.r_message = ctx.message
 
-        await play_audio(pre_filepath, post_filepath)  # noqa
+        await play_audio(self, pre_filepath, post_filepath)  # noqa
 
-    @tasks.loop(seconds=1)
+    @ tasks.loop(seconds=1)
     async def loop(self):
         now_datetime = datetime.datetime.now(
             pytz.timezone(self.time_zone)).strftime('%H:%M:%S')
@@ -277,3 +288,7 @@ class Jihou(commands.Cog):
                 pre_filepath = self.sound_base_path + 'Donglong/me.wav'
 
             await play_audio(pre_filepath, post_filepath)  # noqa
+
+
+def setup(bot):
+    bot.add_cog(Jihou(bot))
