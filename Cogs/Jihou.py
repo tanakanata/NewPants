@@ -32,10 +32,9 @@ class Jihou(commands.Cog):
         self.playing = False
         self.interval = None
         self.r_message = None
-        self.initialize()
 
+    @commands.Cog.listener(name='on_resumed')
     def initialize(self):
-        time.sleep(10)
         self.guild = self.bot.get_guild(self.guild_id)
         LIST1 = self.guild.voice_channels
         for c_list in LIST1:  #
