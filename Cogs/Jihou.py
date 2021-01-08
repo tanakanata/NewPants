@@ -3,7 +3,7 @@ import datetime
 import os
 import random
 import pytz
-import time
+import json
 from discord.ext import commands, tasks
 import discord
 
@@ -32,8 +32,9 @@ class Jihou(commands.Cog):
         self.playing = False
         self.interval = None
         self.r_message = None
+        self.read_json()
+        self.loop.start()
 
-    @commands.Cog.listener(name='on_resumed')
     def initialize(self):
         self.guild = self.bot.get_guild(self.guild_id)
         LIST1 = self.guild.voice_channels
@@ -42,8 +43,22 @@ class Jihou(commands.Cog):
         self.channel_count = len(self.channel_list)
         self.channel_count = self.channel_count - 1
         self.channel_id = self.channel_list[0]
+        self.write_json()
         print(self.channel_list)
         print(self.channel_count)
+
+    def write_json(self):
+        ch_list = {}
+        ch_list["channel_list"] = self.channel_list
+        wf = open('channels.json', 'w')
+        json.dump(ch_list, wf)
+
+    def read_json(self):
+        rf = open('channels.json', 'r')
+        json_date = json.load(rf)
+        self.channel_list = json_date['channel_list']
+        self.channel_count = len(self.channel_list)
+        self.channel_count = self.channel_count - 1
 
     @commands.Cog.listener(name='on_ready')
     async def change_presence(self):
@@ -100,13 +115,8 @@ class Jihou(commands.Cog):
 
         if self.channel_index == self.channel_count:
             self.channel_index = 0
-            print('True')
-            print(self.channel_index)
         else:
             self.channel_index = self.channel_index + 1
-            print('False')
-            print(self.channel_index)
-            print(self.channel_count)
 
     @ commands.command()
     async def now_channel(self, ctx):
@@ -239,7 +249,7 @@ class Jihou(commands.Cog):
 
         self.r_message = ctx.message
 
-        await play_audio(self, pre_filepath, post_filepath)  # noqa
+        await self.play_audio(self, pre_filepath, post_filepath)
 
     @ tasks.loop(seconds=1)
     async def loop(self):
@@ -283,10 +293,13 @@ class Jihou(commands.Cog):
                 self.n_dice = random.randint(12, 15)
                 Vactor = random.choice(actorlist)
 
+            if split_time[0] == '24':
+                self.initialize()
+
             if today == '1225' and V1 == 'Donglong':
                 pre_filepath = self.sound_base_path + 'Donglong/me.wav'
 
-            await play_audio(pre_filepath, post_filepath)  # noqa
+            await self.play_audio(pre_filepath, post_filepath)
 
 
 def setup(bot):
