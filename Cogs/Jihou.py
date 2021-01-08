@@ -28,7 +28,8 @@ class Jihou(commands.Cog):
         self.n_dice = random.randint(12, 15)
         self.now = datetime.datetime.now(
             pytz.timezone(self.time_zone)).strftime('%H:%M:%S')
-        self.sound_base_path = os.path.dirname(os.path.abspath(__file__)) + '/'
+        self.sound_base_path = os.path.normpath(os.path.join(
+            os.path.dirname(os.path.abspath(__file__)), '..')) + '/'
         self.playing = False
         self.interval = None
         self.r_message = None
@@ -137,7 +138,7 @@ class Jihou(commands.Cog):
 
         self.playing = True
 
-        voice = await discord.VoiceChannel.connect(channel)
+        voice = await discord.VoiceChannel.connect(self.channel)
 
         asyncio.sleep(0.5)
 
@@ -249,7 +250,7 @@ class Jihou(commands.Cog):
 
         self.r_message = ctx.message
 
-        await self.play_audio(self, pre_filepath, post_filepath)
+        await self.play_audio(pre_filepath, post_filepath)
 
     @ tasks.loop(seconds=1)
     async def loop(self):
