@@ -52,7 +52,6 @@ class Other(commands.Cog):
     @commands.Cog.listener(name='on_message')
     async def edit_ping(self, message):
         if message.content.startswith('PONG ') and message.author.id == self.bot.user.id:  # noqa
-            　　　　# noqa
             time_now = message.content.replace('PONG ', '')
             ping_time = pytz.timezone('Asia/Tokyo').localize(
                 datetime.datetime.strptime(time_now, '%Y-%m-%d %H:%M:%S.%f'))
