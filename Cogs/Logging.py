@@ -6,6 +6,7 @@ from discord.ext import commands
 
 class Logging(commands.Cog):
     def __init__(self, bot: commands.bot):
+        print('Logging OK')
         self.bot = bot
 
 
@@ -14,7 +15,7 @@ class Logging(commands.Cog):
 
 @commands.Cog.listener(name='on_voice_state_update')
 async def Voice_channel(self, member, before, after):
-    if member.guild.id == 230589505525121024 and (before.channel != after.channel):  # noqa
+    if member.guild.id == 610568927768084499 and (before.channel != after.channel):  # noqa
         now = datetime.datetime.now(pytz.timezone(
             'Asia/Tokyo')).strftime('%H:%M:%S')
         channel = self.bot.get_channel(797311047262404680)
