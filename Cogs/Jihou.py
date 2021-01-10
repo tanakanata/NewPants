@@ -39,20 +39,20 @@ class Jihou(commands.Cog):
     def initialize(self):
         self.guild = self.bot.get_guild(self.guild_id)
         LIST1 = self.guild.voice_channels
-        for c_list in LIST1:  #
+        for c_list in LIST1:
             self.channel_list.append(c_list.id)
         self.channel_count = len(self.channel_list)
         self.channel_count = self.channel_count - 1
         self.channel_id = self.channel_list[0]
+        self.channel = self.bot.get_channel(self.channel_id)
         self.write_json()
-        print(self.channel_list)
-        print(self.channel_count)
 
     def write_json(self):
-        ch_list = {}
-        ch_list["channel_list"] = self.channel_list
+        json_date = {}
+        json_date["channel_list"] = self.channel_list
+        json_date["channel_id"] = self.channel_id
         wf = open('channels.json', 'w')
-        json.dump(ch_list, wf)
+        json.dump(json_date, wf)
 
     def read_json(self):
         rf = open('channels.json', 'r')
@@ -60,9 +60,11 @@ class Jihou(commands.Cog):
         self.channel_list = json_date['channel_list']
         self.channel_count = len(self.channel_list)
         self.channel_count = self.channel_count - 1
+        self.channel_id = json_date['channel_id']
 
     @commands.Cog.listener(name='on_ready')
     async def change_presence(self):
+        self.initialize()
         await self.bot.change_presence(
             activity=discord.Game(self.time_zone))
 
@@ -121,8 +123,17 @@ class Jihou(commands.Cog):
 
     @ commands.command()
     async def now_channel(self, ctx):
-        global channel
         await ctx.send(self.channel.name + 'です。')
+
+    @ commands.command()
+    async def save(self, ctx):
+        self.write_json()
+        await ctx.send('セーブしました。')
+
+    @ commands.command()
+    async def load(self, ctx):
+        self.read_json()
+        await ctx.send('ロードしました。')
 
     @ commands.command()
     async def SV(self, ctx):
@@ -133,6 +144,11 @@ class Jihou(commands.Cog):
         audio2 = discord.FFmpegPCMAudio(post_filepath)
         emoji = '\N{BLACK RIGHT-POINTING TRIANGLE}'
 
+        if self.channel is None:
+            self.channel = self.bot.get_channel(self.channel_id)
+        else:
+            pass
+             
         while(self.playing):
             await asyncio.sleep(1)
 
