@@ -73,6 +73,14 @@ class Jihou(commands.Cog):
         await ctx.send(self.now)
 
     @ commands.command()
+    async def count(self, ctx):
+        await ctx.send(self.channel_count)
+
+    @ commands.command()
+    async def lst(self, ctx):
+        await ctx.send(self.channel_list)
+
+    @ commands.command()
     async def timezone(self, ctx):
         await ctx.send(self.time_zone)
 
@@ -121,6 +129,29 @@ class Jihou(commands.Cog):
         else:
             self.channel_index = self.channel_index + 1
 
+    @commands.command()
+    async def set_channel(self, ctx, *args):
+        max_index = self.channel_count + 1
+        # 引数の数を確認
+        if len(args) == 1:
+            try:
+                new_index = int(args[0])
+            except ValueError:
+                await ctx.send('数字しかはいりませ～～ん')
+                return
+
+        else:
+            await ctx.send(':thinking::thinking::thinking:')
+            return
+        # チャンネル数と比較
+        if 0 <= new_index and new_index > max_index:
+            await ctx.send(':thinking::thinking::thinking:')
+            return
+        else:
+            self.channel_id = self.channel_list[new_index]
+            self.channel = self.bot.get_channel(self.channel_id)
+            await ctx.send(self.channel.name + 'に変更しました。')
+
     @ commands.command()
     async def now_channel(self, ctx):
         await ctx.send(self.channel.name + 'です。')
@@ -148,7 +179,7 @@ class Jihou(commands.Cog):
             self.channel = self.bot.get_channel(self.channel_id)
         else:
             pass
-             
+
         while(self.playing):
             await asyncio.sleep(1)
 
