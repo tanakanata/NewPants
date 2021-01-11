@@ -36,11 +36,11 @@ class Logging(commands.Cog):
                 await channel.send(msg)
 
     # @commands.Cog.listener(name='on_message')
-    # async def on_message(self, message: discord.Message):
+    # async def on_message(self, message: commands.bot.Message):
     #     if message.channel.id == 230589505525121024:
     #         cc = ''
     #         cc += (message.created_at + datetime.timedelta(hours=9)
-    #                ).strftime('%Y-%m-%d %H:%M:%S')
+    #             ).strftime('%Y-%m-%d %H:%M:%S')
     #         cc += ': '
     #         cc += message.author.name
     #         if message.content:
@@ -57,6 +57,23 @@ class Logging(commands.Cog):
     #         if cc != '':
     #             channel = client.get_channel(693537608646656031)
     #             await channel.send(cc)
+
+    # def create_message(self, r_message):
+    #     content = ''
+    #     cc += (message.created_at + datetime.timedelta(hours=9)
+    #             ).strftime('%Y-%m-%d %H:%M:%S')
+    #         cc += ': '
+    #         cc += message.author.name
+    #         if message.content:
+    #             cc += '\n'
+    #             cc += message.content
+
+    #         att_urls = []
+    #         for att in message.attachments:
+    #             att_urls.append(att.url)
+    #         if att_urls:
+    #             cc += '\n'
+    #             cc += '\n'.join(att_urls)
 
 
 def setup(bot):
