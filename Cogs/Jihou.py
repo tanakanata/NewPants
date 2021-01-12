@@ -34,7 +34,7 @@ class Jihou(commands.Cog):
         self.interval = None
         self.r_message = None
         self.read_json()
-        self.loop.start()
+        self.check_loop()
 
     def initialize(self):
         self.channel_list = []
@@ -47,6 +47,12 @@ class Jihou(commands.Cog):
         self.channel_id = self.channel_list[0]
         self.channel = self.bot.get_channel(self.channel_id)
         self.write_json()
+
+    def check_loop(self):
+        if self.loop.is_running:
+            return
+        else:
+            self.loop.start()
 
     def write_json(self):
         json_date = {}
