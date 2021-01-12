@@ -37,6 +37,7 @@ class Jihou(commands.Cog):
         self.loop.start()
 
     def initialize(self):
+        self.channel_list = []
         self.guild = self.bot.get_guild(self.guild_id)
         LIST1 = self.guild.voice_channels
         for c_list in LIST1:
@@ -131,7 +132,7 @@ class Jihou(commands.Cog):
 
     @commands.command()
     async def set_channel(self, ctx, *args):
-        max_index = self.channel_count + 1
+        max_index = self.channel_count
         # 引数の数を確認
         if len(args) == 1:
             try:
@@ -144,13 +145,16 @@ class Jihou(commands.Cog):
             await ctx.send(':thinking::thinking::thinking:')
             return
         # チャンネル数と比較
-        if 0 <= new_index and new_index > max_index:
+        if new_index > max_index:
             await ctx.send(':thinking::thinking::thinking:')
             return
-        else:
-            self.channel_id = self.channel_list[new_index]
-            self.channel = self.bot.get_channel(self.channel_id)
-            await ctx.send(self.channel.name + 'に変更しました。')
+        if 0 > new_index:
+            await ctx.send(':thinking::thinking::thinking:')
+            return
+
+        self.channel_id = self.channel_list[new_index]
+        self.channel = self.bot.get_channel(self.channel_id)
+        await ctx.send(self.channel.name + 'に変更しました。')
 
     @ commands.command()
     async def now_channel(self, ctx):
