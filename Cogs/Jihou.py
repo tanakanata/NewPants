@@ -14,27 +14,30 @@ class Jihou(commands.Cog):
     def __init__(self, bot: commands.bot):
         print('Jihou OK')
         self.bot = bot
-        self.guild_id = 610568927768084499
-        self.channel_id = None
+        self.guild_id: int = 610568927768084499
+        self.channel_id: int = None
         self.guild = None
         self.channel = None
-        self.channel_list = []
-        self.channel_index = 1
-        self.channel_count = None
+        self.channel_list: list = []
+        self.channel_index: int = 1
+        self.channel_count: int = None
         self.channel = None
-        self.time_zone = 'Asia/Tokyo'
-        self.m_dice = random.randint(1, 7)
-        self.d_dice = random.randint(8, 11)
-        self.n_dice = random.randint(12, 15)
-        self.now = datetime.datetime.now(
+        self.time_zone: str = 'Asia/Tokyo'
+        self.m_dice: int = random.randint(1, 7)
+        self.d_dice: int = random.randint(8, 11)
+        self.n_dice: int = random.randint(12, 15)
+        self.now: str = datetime.datetime.now(
             pytz.timezone(self.time_zone)).strftime('%H:%M:%S')
-        self.sound_base_path = os.path.normpath(os.path.join(
+        self.sound_base_path: str = os.path.normpath(os.path.join(
             os.path.dirname(os.path.abspath(__file__)), '..')) + '/'
-        self.playing = False
-        self.interval = None
+        self.playing: bool = False
+        self.interval: int = None
         self.r_message = None
+        self.actorlist: list = []
+        self.vactor: str = None
         self.read_json()
-        self.check_loop()
+        self.vactor_select()
+        self.time_check.start()
 
     def initialize(self):
         self.channel_list = []
@@ -48,11 +51,13 @@ class Jihou(commands.Cog):
         self.channel = self.bot.get_channel(self.channel_id)
         self.write_json()
 
-    def check_loop(self):
-        if self.loop.is_running:
-            return
+    def vactor_select(self):
+        self.actorlist = ['Donglong', 'Chico']
+        self.vactor = random.choice(self.actorlist)
+        if self.vactor == 'Donglong':
+            self.interval = 2
         else:
-            self.loop.start()
+            self.interval = 0.5
 
     def write_json(self):
         json_date = {}
@@ -69,11 +74,27 @@ class Jihou(commands.Cog):
         self.channel_count = self.channel_count - 1
         self.channel_id = json_date['channel_id']
 
+    def cog_unload(self):
+        self.time_check.cancel()
+
     @commands.Cog.listener(name='on_ready')
     async def change_presence(self):
         self.initialize()
         await self.bot.change_presence(
             activity=discord.Game(self.time_zone))
+
+    @commands.command(name='start')
+    async def start_loop(self, ctx):
+        try:
+            self.time_check.start()
+            await ctx.send('started!!')
+        except RuntimeError:
+            await ctx.send('すでに動いてるで')
+
+    @commands.command(name='stop')
+    async def stop_loop(self, ctx):
+        self.time_check.stop()
+        await ctx.send('stopping!!!!')
 
     @ commands.command()
     async def nowtime(self, ctx):
@@ -216,6 +237,8 @@ class Jihou(commands.Cog):
 
         await voice.disconnect()
 
+        self.vactor_select()
+
         try:
             await self.r_message.add_reaction(emoji)
         except NameError:
@@ -229,11 +252,7 @@ class Jihou(commands.Cog):
     async def test_join(self, ctx, *args):
         now_datetime = datetime.datetime.now(
             pytz.timezone(self.time_zone)).strftime('%H:%M:%S')
-        today = datetime.datetime.now(
-            pytz.timezone(self.time_zone)).strftime('%m%d')
         split_time = now_datetime.split(':')
-        actorlist = ['Donglong', 'Chico']
-        Vactor = random.choice(actorlist)
 
         if len(args) == 0:
             jikoku = int(split_time[0])
@@ -251,7 +270,7 @@ class Jihou(commands.Cog):
                 await ctx.send('引数間違えないでください！！！！！')
                 return
             if args[1] == 'Donglong' or args[1] == 'Chico':
-                Vactor = args[1]
+                self.vactor = args[1]
 
         else:
             await ctx.send('使い方知ってる？？？？？？？？？')
@@ -267,40 +286,27 @@ class Jihou(commands.Cog):
                             小学校からやり直したほうがいいですよ？？？？')
             return
 
-        if Vactor == 'Donglong':
-            self.interval = 2
-
-        else:
-            self.interval = 0.5
-
         jikoku = str(jikoku)
         jikoku = jikoku.zfill(2)
-        V1 = Vactor
 
         if '05' <= jikoku <= '10':
             pre_filepath = self.sound_base_path + \
-                '{0}/pre/{1}.wav'.format(Vactor, self.m_dice)
+                '{0}/pre/{1}.wav'.format(self.vactor, self.m_dice)
             post_filepath = self.sound_base_path + \
-                '{0}/{1}.wav'.format(Vactor, jikoku)
+                '{0}/{1}.wav'.format(self.vactor, jikoku)
             self.m_dice = random.randint(1, 7)
-            Vactor = random.choice(actorlist)
         elif '11' <= jikoku <= '17':
             pre_filepath = self.sound_base_path + \
-                '{0}/pre/{1}.wav'.format(Vactor, self.d_dice)
+                '{0}/pre/{1}.wav'.format(self.vactor, self.d_dice)
             post_filepath = self.sound_base_path + \
-                '{0}/{1}.wav'.format(Vactor, jikoku)
+                '{0}/{1}.wav'.format(self.vactor, jikoku)
             self.d_dice = random.randint(8, 11)
-            Vactor = random.choice(actorlist)
         elif '18' <= jikoku <= '24' or '00' <= jikoku <= '04':
             pre_filepath = self.sound_base_path + \
-                '{0}/pre/{1}.wav'.format(Vactor, self.n_dice)
+                '{0}/pre/{1}.wav'.format(self.vactor, self.n_dice)
             post_filepath = self.sound_base_path + \
-                '{0}/{1}.wav'.format(Vactor, jikoku)
+                '{0}/{1}.wav'.format(self.vactor, jikoku)
             self.n_dice = random.randint(12, 15)
-            Vactor = random.choice(actorlist)
-
-        if today == '1225' and V1 == 'Donglong':
-            pre_filepath = self.sound_base_path + 'Donglong/me.wav'
 
         while(self.playing):
             await asyncio.sleep(1)
@@ -310,52 +316,34 @@ class Jihou(commands.Cog):
         await self.play_audio(pre_filepath, post_filepath)
 
     @ tasks.loop(seconds=1)
-    async def loop(self):
+    async def time_check(self):
         now_datetime = datetime.datetime.now(
             pytz.timezone(self.time_zone)).strftime('%H:%M:%S')
-        today = datetime.datetime.now(
-            pytz.timezone(self.time_zone)).strftime('%m%d')
         split_time = now_datetime.split(':')
-        actorlist = ['Donglong', 'Chico']
-        Vactor = random.choice(actorlist)
-
-        if Vactor == 'Donglong':
-            self.interval = 2
-
-        else:
-            self.interval = 0.5
-
-        V1 = Vactor
 
         if split_time[1] == '00' and split_time[2] == '00':
             if '05' <= split_time[0] <= '10':
                 pre_filepath = self.sound_base_path + \
-                    '/{0}/pre/{1}.wav'.format(Vactor, self.m_dice)
+                    '/{0}/pre/{1}.wav'.format(self.vactor, self.m_dice)
                 post_filepath = self.sound_base_path + \
-                    '{0}/{1}.wav'.format(Vactor, split_time[0])
+                    '{0}/{1}.wav'.format(self.vactor, split_time[0])
                 self.m_dice = random.randint(1, 7)
-                Vactor = random.choice(actorlist)
             elif '11' <= split_time[0] <= '17':
                 pre_filepath = self.sound_base_path + \
-                    '{0}/pre/{1}.wav'.format(Vactor, self.d_dice)
+                    '{0}/pre/{1}.wav'.format(self.vactor, self.d_dice)
                 post_filepath = self.sound_base_path + \
-                    '{0}/{1}.wav'.format(Vactor, split_time[0])
+                    '{0}/{1}.wav'.format(self.vactor, split_time[0])
                 self.d_dice = random.randint(8, 11)
-                Vactor = random.choice(actorlist)
             elif '18' <= split_time[0] <= '24' \
                     or '00' <= split_time[0] <= '04':
                 pre_filepath = self.sound_base_path + \
-                    '{0}/pre/{1}.wav'.format(Vactor, self.n_dice)
+                    '{0}/pre/{1}.wav'.format(self.vactor, self.n_dice)
                 post_filepath = self.sound_base_path + \
-                    '{0}/{1}.wav'.format(Vactor, split_time[0])
+                    '{0}/{1}.wav'.format(self.vactor, split_time[0])
                 self.n_dice = random.randint(12, 15)
-                Vactor = random.choice(actorlist)
 
             if split_time[0] == '24':
                 self.initialize()
-
-            if today == '1225' and V1 == 'Donglong':
-                pre_filepath = self.sound_base_path + 'Donglong/me.wav'
 
             await self.play_audio(pre_filepath, post_filepath)
 
