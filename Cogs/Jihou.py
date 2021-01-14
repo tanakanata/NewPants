@@ -101,14 +101,6 @@ class Jihou(commands.Cog):
         await ctx.send(self.now)
 
     @ commands.command()
-    async def count(self, ctx):
-        await ctx.send(self.channel_count)
-
-    @ commands.command()
-    async def lst(self, ctx):
-        await ctx.send(self.channel_list)
-
-    @ commands.command()
     async def timezone(self, ctx):
         await ctx.send(self.time_zone)
 
@@ -241,7 +233,7 @@ class Jihou(commands.Cog):
 
         try:
             await self.r_message.add_reaction(emoji)
-        except NameError:
+        except AttributeError:
             pass
 
         self.playing = False
