@@ -32,7 +32,7 @@ class Jihou(commands.Cog):
         self.sound_base_path: str = os.path.normpath(os.path.join(
             os.path.dirname(os.path.abspath(__file__)), '..')) + '/'
         self.playing: bool = False
-        self.auto_channel_select = False
+        self.auto_channel_select: bool = False
         self.interval: int = None
         self.r_message = None
         self.actorlist: list = []
@@ -89,7 +89,9 @@ class Jihou(commands.Cog):
                 id_list.append(member_id.id)
                 self.member_count[ch_id] = len(id_list)
 
-        self.channel_id = min(self.member_count, key=self.member_count.get)
+        print('OK')
+        print(max(self.member_count, key=self.member_count.get))
+        self.channel_id = max(self.member_count, key=self.member_count.get)
 
     @commands.Cog.listener(name='on_ready')
     async def change_presence(self):
@@ -109,6 +111,15 @@ class Jihou(commands.Cog):
     async def stop_loop(self, ctx):
         self.time_check.stop()
         await ctx.send('stopping!!!!')
+
+    @commands.command(name='auto_select', aliases=['as'])
+    async def toggle_auto_channel_select(self, ctx):
+        if self.auto_channel_select:
+            self.auto_channel_select = False
+            await ctx.send('выключен')
+        else:
+            self.auto_channel_select = True
+            await ctx.send('на')
 
     @ commands.command()
     async def nowtime(self, ctx):
@@ -214,10 +225,8 @@ class Jihou(commands.Cog):
         if self.auto_channel_select:
             self.vc_counter()
 
-        if self.channel is None:
-            self.channel = self.bot.get_channel(self.channel_id)
-        else:
-            pass
+        print(self.channel_id)
+        self.channel = self.bot.get_channel(self.channel_id)
 
         while(self.playing):
             await asyncio.sleep(1)
