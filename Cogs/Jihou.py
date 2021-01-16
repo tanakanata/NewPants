@@ -86,8 +86,11 @@ class Jihou(commands.Cog):
             channel = self.bot.get_channel(ch_id)
             members = channel.members
             for member_id in members:
-                id_list.append(member_id.id)
-                self.member_count[ch_id] = len(id_list)
+                if member_id.bot:
+                    pass
+                else:
+                    id_list.append(member_id.id)
+                    self.member_count[ch_id] = len(id_list)
 
         print('OK')
         print(max(self.member_count, key=self.member_count.get))
@@ -120,6 +123,10 @@ class Jihou(commands.Cog):
         else:
             self.auto_channel_select = True
             await ctx.send('на')
+
+    @ commands.command()
+    async def test(self, ctx):
+        await ctx.send('なにも起きないよ')
 
     @ commands.command()
     async def nowtime(self, ctx):
