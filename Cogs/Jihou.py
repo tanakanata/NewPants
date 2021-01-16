@@ -22,6 +22,7 @@ class Jihou(commands.Cog):
         self.channel_index: int = 1
         self.channel_count: int = None
         self.channel = None
+        self.member_count: dict = {}
         self.time_zone: str = 'Asia/Tokyo'
         self.m_dice: int = random.randint(1, 7)
         self.d_dice: int = random.randint(8, 11)
@@ -31,6 +32,7 @@ class Jihou(commands.Cog):
         self.sound_base_path: str = os.path.normpath(os.path.join(
             os.path.dirname(os.path.abspath(__file__)), '..')) + '/'
         self.playing: bool = False
+        self.auto_channel_select = False
         self.interval: int = None
         self.r_message = None
         self.actorlist: list = []
@@ -76,6 +78,18 @@ class Jihou(commands.Cog):
 
     def cog_unload(self):
         self.time_check.cancel()
+
+    def vc_counter(self):
+        self.member_count = {}
+        for ch_id in self.channel_list:
+            id_list = []
+            channel = self.bot.get_channel(ch_id)
+            members = channel.members
+            for member_id in members:
+                id_list.append(member_id.id)
+                self.member_count[ch_id] = len(id_list)
+
+        self.channel_id = min(self.member_count, key=self.member_count.get)
 
     @commands.Cog.listener(name='on_ready')
     async def change_presence(self):
@@ -197,6 +211,8 @@ class Jihou(commands.Cog):
         audio1 = discord.FFmpegPCMAudio(pre_filepath)
         audio2 = discord.FFmpegPCMAudio(post_filepath)
         emoji = '\N{BLACK RIGHT-POINTING TRIANGLE}'
+        if self.auto_channel_select:
+            self.vc_counter()
 
         if self.channel is None:
             self.channel = self.bot.get_channel(self.channel_id)
