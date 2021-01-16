@@ -31,11 +31,11 @@ async def shutdown(ctx):
     if ctx.message.author.id in adminlist:
         print("shutdown")
         await ctx.send('shutdown')
-    try:
-        await bot.logout()
-    except:  # noqa
-        print("EnvironmentError")
-        bot.clear()
+        try:
+            await bot.logout()
+        except:  # noqa
+            print("EnvironmentError")
+            bot.clear()
     else:
         await ctx.send("You do not own this bot!")
 
