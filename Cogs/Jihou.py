@@ -40,6 +40,7 @@ class Jihou(commands.Cog):
         self.read_json()
         self.vactor_select()
         self.time_check.start()
+        self.prefix = bot.command_prefix
 
     def initialize(self):
         self.channel_list = []
@@ -126,7 +127,7 @@ class Jihou(commands.Cog):
 
     @ commands.command()
     async def test(self, ctx):
-        await ctx.send('なにも起きないよ')
+        await ctx.send(self.prefix)
 
     @ commands.command()
     async def nowtime(self, ctx):
