@@ -40,7 +40,6 @@ class Jihou(commands.Cog):
         self.read_json()
         self.vactor_select()
         self.time_check.start()
-        self.prefix = bot.command_prefix
 
     def initialize(self):
         self.channel_list = []
@@ -103,6 +102,7 @@ class Jihou(commands.Cog):
         await self.bot.change_presence(
             activity=discord.Game(self.time_zone))
 
+    @commands.guild_only()
     @commands.command(name='start')
     async def start_loop(self, ctx):
         try:
@@ -111,11 +111,13 @@ class Jihou(commands.Cog):
         except RuntimeError:
             await ctx.send('すでに動いてるで')
 
+    @commands.guild_only()
     @commands.command(name='stop')
     async def stop_loop(self, ctx):
         self.time_check.stop()
         await ctx.send('stopping!!!!')
 
+    @commands.guild_only()
     @commands.command(name='auto_select', aliases=['as'])
     async def toggle_auto_channel_select(self, ctx):
         if self.auto_channel_select:
@@ -127,7 +129,7 @@ class Jihou(commands.Cog):
 
     @ commands.command()
     async def test(self, ctx):
-        await ctx.send(self.prefix)
+        await ctx.send('なにも起きないよ')
 
     @ commands.command()
     async def nowtime(self, ctx):
@@ -171,6 +173,7 @@ class Jihou(commands.Cog):
         else:
             await ctx.send("そんなもの存在しませ〜んw")
 
+    @commands.guild_only()
     @ commands.command()
     async def toggle_channel(self, ctx):
         self.channel_id = self.channel_list[self.channel_index]
@@ -182,6 +185,7 @@ class Jihou(commands.Cog):
         else:
             self.channel_index = self.channel_index + 1
 
+    @commands.guild_only()
     @commands.command()
     async def set_channel(self, ctx, *args):
         max_index = self.channel_count
@@ -273,6 +277,7 @@ class Jihou(commands.Cog):
 
         return
 
+    @commands.guild_only()
     @ commands.command()
     async def test_join(self, ctx, *args):
         now_datetime = datetime.datetime.now(
