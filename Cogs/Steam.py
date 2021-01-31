@@ -2,6 +2,7 @@ import requests
 import json
 import config
 from discord.ext import commands
+import xml.etree.ElementTree as ET
 
 
 class Steam(commands.Cog):
@@ -57,8 +58,25 @@ class Steam(commands.Cog):
 
         return status_code, game_count, game_list, playtime_list
 
+    def get_userid(self, username):
+        URL = f'https://steamcommunity.com/id/{username}/?xml=1'
+        # URLを使用しXMLを取得
+        response = requests.get(URL)
+
+        # XMLからsteamIDを取得
+        root = ET.fromstring(response.text)
+        for u_id in root.iter('steamID64'):
+            steam_id = u_id.text
+
+        return steam_id
+
     @commands.command()
-    async def get_game(self, ctx, userid):
+    async def get_game(self, ctx, username):
+        try:
+            userid = int(username)
+        except ValueError:
+            userid = self.get_userid(username)
+
         r = self.get_games(userid)
 
         if type(r) == int:
