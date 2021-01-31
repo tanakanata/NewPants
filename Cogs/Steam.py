@@ -59,12 +59,6 @@ class Steam(commands.Cog):
 
     @commands.command()
     async def get_game(self, ctx, userid):
-        try:
-            userid = int(userid)
-        except ValueError:
-            await ctx.send('ValueError')
-            return
-
         r = self.get_games(userid)
 
         if type(r) == int:
