@@ -1,5 +1,6 @@
 import requests
 import json
+import re
 import config
 from discord.ext import commands
 import xml.etree.ElementTree as ET
@@ -58,26 +59,25 @@ class Steam(commands.Cog):
 
         return status_code, game_count, game_list, playtime_list
 
-    def get_userid(self, username):
-        URL = f'https://steamcommunity.com/id/{username}/?xml=1'
-        # URLを使用しXMLを取得
-        response = requests.get(URL)
-
-        # XMLからsteamIDを取得
-        root = ET.fromstring(response.text)
-        for u_id in root.iter('steamID64'):
-            steam_id = u_id.text
-
-        return steam_id
-
     @commands.command()
     async def get_game(self, ctx, username):
-        try:
-            userid = int(username)
-        except ValueError:
-            userid = self.get_userid(username)
+        if re.match(r'^[0-9]+$', username):
+            steamID = username
 
-        r = self.get_games(userid)
+        elif re.match(r'^[0-9a-zA-Z_]+$', username):
+            URL = f'https://steamcommunity.com/id/{username}/?xml=1'
+            # URLを使用しXMLを取得
+            response = requests.get(URL)
+
+            # XMLからsteamIDを取得
+            root = ET.fromstring(response.text)
+            for u_id in root.iter('steamID64'):
+                steamID = u_id.text
+        else:
+            await ctx.send('usernameがおかしいよ')
+            return
+
+        r = self.get_games(steamID)
 
         if type(r) == int:
             status_code = r
