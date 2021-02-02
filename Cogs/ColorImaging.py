@@ -144,15 +144,15 @@ class ColorImaging(commands.Cog):
         elif len(args) == 1:
             color = str(args[0])
             html = color.replace('#', '')
+            if re.match(r'^([0-9a-fA-F]{6})$', html):
+                Red = int(html[0:2], 16)
+                Green = int(html[2:4], 16)
+                Blue = int(html[4:6], 16)
 
-            if re.fullmatch(r'([0-9a-fA-F]){6}', html) == '':
-                await ctx.send('は？')
+            else:
+                await ctx.send('16進数ってご存知？')
                 self.imaging = False
                 return
-
-            Red = int(html[0:2], 16)
-            Green = int(html[2:4], 16)
-            Blue = int(html[4:6], 16)
 
         else:
             await ctx.send('何かがおかしいよ？')
