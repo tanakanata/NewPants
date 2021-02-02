@@ -29,9 +29,9 @@ class Steam(commands.Cog):
         if not 200 <= status_code <= 299:
             return status_code
         # リクエストの結果をjsonに格納
-        json_date = json.loads(result.text)
+        json_data = result.json()
         # プロフィールが非公開かどうかを判定
-        response = json_date["response"]
+        response = json_data["response"]
         if len(response) == 0:
             status_code = 403
             print('403')
@@ -43,9 +43,9 @@ class Steam(commands.Cog):
             print('404')
             return status_code
 
-        json_date = response["games"]
+        json_data = response["games"]
         # ゲーム一覧からゲーム名とプレイ時間を取得
-        for game in json_date:
+        for game in json_data:
             game_list.append(game["name"])
             time = divmod(game["playtime_forever"], 60)
             txt = f'{time[0]}時間{time[1]}分'
