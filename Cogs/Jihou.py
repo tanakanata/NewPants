@@ -237,7 +237,6 @@ class Jihou(commands.Cog):
         if self.auto_channel_select:
             self.vc_counter()
 
-        print(self.channel_id)
         self.channel = self.bot.get_channel(self.channel_id)
 
         while(self.playing):
