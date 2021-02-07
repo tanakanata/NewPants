@@ -5,3 +5,4 @@
 config.py
 .vscode/settings.json
 Cogs/__pycache__/
+.env
