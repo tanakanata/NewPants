@@ -182,7 +182,6 @@ class Steam(commands.Cog):
         if json_data == 403:
             await ctx.send('プロフィールが非公開みたい')
             return
-
         elif json_data == 404:
             await ctx.send('まだゲームを持ってないみたい')
             return
@@ -190,6 +189,8 @@ class Steam(commands.Cog):
         game_count = json_data["response"]["game_count"]
 
         json_data = json_data["response"]["games"]
+        json_data = sorted(json_data, key=lambda x: x['name'])
+
         # ゲーム名をリストに格納
         for game in json_data:
             game_list.append(game["name"])
