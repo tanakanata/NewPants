@@ -181,9 +181,11 @@ class Steam(commands.Cog):
 
         if json_data == 403:
             await ctx.send('プロフィールが非公開みたい')
+            return
 
         elif json_data == 404:
             await ctx.send('まだゲームを持ってないみたい')
+            return
         # result.jsonから所持ゲーム数を取り出し
         game_count = json_data["response"]["game_count"]
 
