@@ -201,13 +201,13 @@ class Steam(commands.Cog):
             partMessageNum = 1
 
             for line in game_list:
-                if len(partMessageBody) + len(line) >= discordTextMaxLength:  # noqa
+                if len(partMessageBody) + len(line) >= text_max_length:  # noqa
                     await ctx.send(f'```{partMessageBody}```')
                     partMessageBody = ""
                     partMessageNum += 1
                 partMessageBody += line + '\n'
 
-                await ctx.send(f'```{partMessageBody}```')
+            await ctx.send(f'```{partMessageBody}```')
 
 
 def setup(bot):
