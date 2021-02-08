@@ -52,12 +52,17 @@ class Other(commands.Cog):
     @commands.command()
     async def sorry(self,ctx):
         messages = await ctx.channel.history(limit=20).flatten()
+        id_list = []
         for msg in messages:
             if msg.author.bot:
                 print('bot')
             else:
-                mention = msg.author.mention
-                break
+                id_list.append(msg.author.mention)
+                if len(id_list) == 2:
+                    break
+
+        mention = id_list[1]
+            
         await ctx.send(f'{mention}さんへ \n ごめんね。\n {ctx.author.mention}より。')
 
 
