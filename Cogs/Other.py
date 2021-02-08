@@ -49,6 +49,19 @@ class Other(commands.Cog):
             ).strftime('%Y-%m-%d %H:%M:%S.%f')
         ))
 
+    @commands.command()
+    async def sorry(self,ctx):
+        messages = await ctx.channel.history(limit=20).flatten()
+        for msg in messages:
+            if msg.author.bot:
+                print('bot')
+            else:
+                mention = msg.author.mention
+                break
+        await ctx.send(f'{mention}さんへ \n ごめんね。\n {ctx.author.mention}より。')
+
+
+
     @commands.Cog.listener(name='on_message')
     async def edit_ping(self, message):
         if message.content.startswith('PONG ') and message.author.id == self.bot.user.id:  # noqa
