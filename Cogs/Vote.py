@@ -1,3 +1,4 @@
+import json
 import typing
 from discord.ext import commands
 
@@ -12,6 +13,26 @@ class Vote(commands.Cog):
 
         for i in range(item_count):
             await message.add_reaction(emoji_list[i])
+
+    def save_json(self, json_data):
+        pass
+
+    def load_json(self, json_data):
+        f = open('vote.json', 'r')
+        json_data = json.load(f)
+        return json_data
+
+    @commands.Cog.listener
+    async def on_reaction_add(self, reaction, user):
+        # json読み出し
+        json_data = self.load_json()
+        # json_dataにメッセージIDが存在するか確認
+        if reaction.message.id not in json_data:
+            return
+
+    @commands.Cog.listener
+    async def on_reaction_remove(self, reaction, user):
+        pass
 
     @commands.group(invoke_without_command=True)
     async def vote(self, ctx):
