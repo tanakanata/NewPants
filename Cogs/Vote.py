@@ -1,5 +1,6 @@
 import json
 import typing
+from datatime import datatime
 from discord.ext import commands
 
 
@@ -30,6 +31,18 @@ class Vote(commands.Cog):
         if reaction.message.id not in json_data:
             return
 
+        message_id = reaction.message.id
+
+        id_list = json_data[message_id]['id_list']
+
+        if user.id in id_list:
+            await reaction.remove(user.id)
+            return
+
+        id_list.append(user.id)
+
+    def make_json_data(self, message)
+
     @commands.Cog.listener
     async def on_reaction_remove(self, reaction, user):
         pass
@@ -40,6 +53,7 @@ class Vote(commands.Cog):
 
     @vote.command
     async def start(self, ctx, min: typing.Optional[int] = 30, *args):
+        json_data = {}
         emoji_list = ['1⃣', '2⃣', '3⃣', '4⃣',
                       '5⃣', '6⃣', '7⃣', '8⃣', '9⃣', '🔟']
         if len(args) >= 11:
@@ -60,6 +74,8 @@ class Vote(commands.Cog):
         item_count = len(args)
 
         await self.add_reaction(message, item_count)
+
+        json_data[message.id] = {"count_time": }
 
     @vote.command
     async def result(self, ctx):
