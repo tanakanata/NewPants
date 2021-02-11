@@ -39,7 +39,7 @@ class Vote(commands.Cog):
         json_data[message.id] = {
             "executor": user.id,
             "count_time": count_time_text,
-            "id_list": []
+            "vote_user": {}
         }
 
         # json_dataの内容が新しくなったのでファイルに保存
@@ -48,6 +48,7 @@ class Vote(commands.Cog):
     @ commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         print('リアクション追加されたよ')
+        print(reaction.emoji)
         # json読み出し
         json_data = self.load_json()
 
@@ -56,40 +57,42 @@ class Vote(commands.Cog):
         if message_id not in json_data:
             return
 
-        id_list = json_data[message_id]['id_list']
-        user_id = int(user.id)
+        vote_user = json_data[message_id]['vote_user']
+        user_id = str(user.id)
+        emoji = reaction.emoji
 
         # すでに投票済みだった場合、リアクションをremove
-        if user_id in id_list:
+        if user_id in vote_user:
             await reaction.remove(user)
             return
         # 投票前だった場合、投票済みリストにidを追加
         else:
-            id_list.append(user_id)
+            json_data[message_id]['vote_user'] = {user_id: emoji}
 
         # 投票済みリストが更新されたのでjsonも更新
-        json_data[message_id]['id_list'] = id_list
+        print(json_data)
         self.save_json(json_data)
 
-    @ commands.Cog.listener()
-    async def on_reaction_remove(self, reaction, user):
-        print(user.name)
-        # json読み出し
-        json_data = self.load_json()
+    # @ commands.Cog.listener()
+    # async def on_reaction_remove(self, reaction, user):
+    #     print(user.name)
+    #     # json読み出し
+    #     json_data = self.load_json()
 
-        message_id = str(reaction.message.id)
-        # json_dataにメッセージIDが存在するか確認
-        if message_id not in json_data:
-            return
+    #     message_id = str(reaction.message.id)
+    #     user_id = str(user.id)
+    #     # json_dataにメッセージIDが存在するか確認
+    #     if message_id not in json_data:
+    #         return
 
-        id_list = json_data[message_id]['id_list']
+    #     vote_user = json_data[message_id]['vote_user']
 
-        # リアクションを外した人のidを投票済みリストから削除
-        id_list.remove(user.id)
+    #     # リアクションを外した人のidを投票済みリストから削除
+    #     del vote_user[user_id]
 
-        # 投票済みリストが更新されたのでjsonも更新
-        json_data[message_id]['id_list'] = id_list
-        self.save_json(json_data)
+    #     # 投票済みリストが更新されたのでjsonも更新
+    #     json_data[message_id]['vote_user'] = vote_user
+    #     self.save_json(json_data)
 
     # memo
     # リアクション追加→投票済みでリアクション削除→on_reaction_removeが反応して、投票済みリストからid削除→リアクションはついているが投票済みリストにidがないので、2つめのリアクションをつけることができる
