@@ -1,12 +1,13 @@
 import json
 import typing
-from datatime import datatime
+import datetime
 from discord.ext import commands
 
 
 class Vote(commands.Cog):
     def __init__(self, bot: commands.bot):
         self.bot = bot
+        print(__name__)
 
     async def add_reaction(self, message, item_count: int):
         emoji_list = ['1⃣', '2⃣', '3⃣', '4⃣',
@@ -16,44 +17,89 @@ class Vote(commands.Cog):
             await message.add_reaction(emoji_list[i])
 
     def save_json(self, json_data):
-        pass
+        save_file = open('vote.json', 'w')
+        json.dump(json_data, save_file)
 
-    def load_json(self, json_data):
+    def load_json(self):
         f = open('vote.json', 'r')
         json_data = json.load(f)
         return json_data
 
-    @commands.Cog.listener
+    def make_json_data(self, message, user, min):
+        # 最新のデータを読み出し
+        json_data = self.load_json()
+
+        # 開票時間を計算
+        now = datetime.datetime.now()
+        count_time = now + datetime.timedelta(minutes=min)
+        # 時間を文字列に変換
+        count_time_text = count_time.strftime('%Y%m%d_%H:%M')
+
+        # 既存のjson_dataに新しい要素を追加
+        json_data[message.id] = {
+            "executor": user.id,
+            "count_time": count_time_text,
+            "id_list": []
+        }
+
+        # json_dataの内容が新しくなったのでファイルに保存
+        self.save_json(json_data)
+
+    @ commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
+        print('リアクション追加されたよ')
         # json読み出し
         json_data = self.load_json()
+
+        message_id = str(reaction.message.id)
         # json_dataにメッセージIDが存在するか確認
-        if reaction.message.id not in json_data:
+        if message_id not in json_data:
             return
 
-        message_id = reaction.message.id
+        id_list = json_data[message_id]['id_list']
+        user_id = int(user.id)
+
+        # すでに投票済みだった場合、リアクションをremove
+        if user_id in id_list:
+            await reaction.remove(user)
+            return
+        # 投票前だった場合、投票済みリストにidを追加
+        else:
+            id_list.append(user_id)
+
+        # 投票済みリストが更新されたのでjsonも更新
+        json_data[message_id]['id_list'] = id_list
+        self.save_json(json_data)
+
+    @ commands.Cog.listener()
+    async def on_reaction_remove(self, reaction, user):
+        print(user.name)
+        # json読み出し
+        json_data = self.load_json()
+
+        message_id = str(reaction.message.id)
+        # json_dataにメッセージIDが存在するか確認
+        if message_id not in json_data:
+            return
 
         id_list = json_data[message_id]['id_list']
 
-        if user.id in id_list:
-            await reaction.remove(user.id)
-            return
+        # リアクションを外した人のidを投票済みリストから削除
+        id_list.remove(user.id)
 
-        id_list.append(user.id)
+        # 投票済みリストが更新されたのでjsonも更新
+        json_data[message_id]['id_list'] = id_list
+        self.save_json(json_data)
 
-    def make_json_data(self, message)
+    # memo
+    # リアクション追加→投票済みでリアクション削除→on_reaction_removeが反応して、投票済みリストからid削除→リアクションはついているが投票済みリストにidがないので、2つめのリアクションをつけることができる
 
-    @commands.Cog.listener
-    async def on_reaction_remove(self, reaction, user):
-        pass
-
-    @commands.group(invoke_without_command=True)
+    @ commands.group(invoke_without_command=True)
     async def vote(self, ctx):
         await ctx.send('そのうち使い方を実装するよ')
 
-    @vote.command
+    @ vote.command()
     async def start(self, ctx, min: typing.Optional[int] = 30, *args):
-        json_data = {}
         emoji_list = ['1⃣', '2⃣', '3⃣', '4⃣',
                       '5⃣', '6⃣', '7⃣', '8⃣', '9⃣', '🔟']
         if len(args) >= 11:
@@ -71,13 +117,15 @@ class Vote(commands.Cog):
 
         message = await ctx.send(text)
 
+        user = ctx.author
+
         item_count = len(args)
 
         await self.add_reaction(message, item_count)
 
-        json_data[message.id] = {"count_time": }
+        self.make_json_data(message, user, min)
 
-    @vote.command
+    @ vote.command()
     async def result(self, ctx):
         pass
 
