@@ -25,7 +25,7 @@ class Vote(commands.Cog):
         json_data = json.load(f)
         return json_data
 
-    def make_json_data(self, message, user, min):
+    def make_json_data(self, message, channel_id, user, min):
         # 最新のデータを読み出し
         json_data = self.load_json()
 
@@ -38,12 +38,28 @@ class Vote(commands.Cog):
         # 既存のjson_dataに新しい要素を追加
         json_data[message.id] = {
             "executor": user.id,
+            "channel_id": channel_id,
             "count_time": count_time_text,
             "vote_user": {}
         }
 
         # json_dataの内容が新しくなったのでファイルに保存
         self.save_json(json_data)
+
+    async def aggregate(self, message_id):
+        json_data = self.load_json
+        channel_id = json_data[message_id]["channel_id"]
+        channel = self.bot.get_channel(channel_id)
+        vote_message = await channel.fetch_message(message_id)
+
+        reactions = vote_message.reactions
+
+        result = {}
+
+        for r in reactions:
+            result[r.emoji] = r.count
+
+        return result
 
     @ commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
@@ -73,30 +89,34 @@ class Vote(commands.Cog):
         print(json_data)
         self.save_json(json_data)
 
-    # @ commands.Cog.listener()
-    # async def on_reaction_remove(self, reaction, user):
-    #     print(user.name)
-    #     # json読み出し
-    #     json_data = self.load_json()
+    @ commands.Cog.listener()
+    async def on_reaction_remove(self, reaction, user):
+        print(user.name)
+        # json読み出し
+        json_data = self.load_json()
 
-    #     message_id = str(reaction.message.id)
-    #     user_id = str(user.id)
-    #     # json_dataにメッセージIDが存在するか確認
-    #     if message_id not in json_data:
-    #         return
+        message_id = str(reaction.message.id)
+        user_id = str(user.id)
+        # json_dataにメッセージIDが存在するか確認
+        if message_id not in json_data:
+            return
 
-    #     vote_user = json_data[message_id]['vote_user']
+        vote_user = json_data[message_id]['vote_user']
+        remove_data = (user_id, reaction.emoji)
 
-    #     # リアクションを外した人のidを投票済みリストから削除
-    #     del vote_user[user_id]
+        if remove_data not in vote_user.items():
+            return
 
-    #     # 投票済みリストが更新されたのでjsonも更新
-    #     json_data[message_id]['vote_user'] = vote_user
-    #     self.save_json(json_data)
+        # リアクションを外した人のidを投票済みリストから削除
+        del vote_user[user_id]
+
+        # 投票済みリストが更新されたのでjsonも更新
+        json_data[message_id]['vote_user'] = vote_user
+        self.save_json(json_data)
 
     # memo
     # リアクション追加→投票済みでリアクション削除→on_reaction_removeが反応して、投票済みリストからid削除→リアクションはついているが投票済みリストにidがないので、2つめのリアクションをつけることができる
-
+    # vote.jsonにuser_idと絵文字をセットにして保存→on_reaction_removeが実行されたときに外された絵文字とjsonに保存された絵文字を比較→一緒だった場合のみjsonからidを削除
     @ commands.group(invoke_without_command=True)
     async def vote(self, ctx):
         await ctx.send('そのうち使い方を実装するよ')
@@ -121,16 +141,28 @@ class Vote(commands.Cog):
         message = await ctx.send(text)
 
         user = ctx.author
+        channel_id = ctx.message.channel.id
 
         item_count = len(args)
 
         await self.add_reaction(message, item_count)
 
-        self.make_json_data(message, user, min)
+        self.make_json_data(message, channel_id, user, min)
 
     @ vote.command()
-    async def result(self, ctx):
-        pass
+    async def result(self, ctx, vote_message_id: str):
+        json_data = self.load_json
+        # json_dataにメッセージIDが存在するか確認
+        if vote_message_id not in json_data:
+            return
+
+        result = self.aggregate(vote_message_id)
+
+        await ctx.send(result)
+
+    # @ commands.Cog.listener()
+    # async def on_command_error(ctx, error):
+    #     await ctx.send(error)
 
 
 def setup(bot):
