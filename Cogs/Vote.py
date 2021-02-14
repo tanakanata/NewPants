@@ -8,13 +8,18 @@ class Vote(commands.Cog):
     def __init__(self, bot: commands.bot):
         self.bot = bot
         print(__name__)
+        self.end_button = '🔚'
 
     async def add_reaction(self, message, item_count: int):
+        # 投票用ボタンを追加
         emoji_list = ['1⃣', '2⃣', '3⃣', '4⃣',
                       '5⃣', '6⃣', '7⃣', '8⃣', '9⃣', '🔟']
 
         for i in range(item_count):
             await message.add_reaction(emoji_list[i])
+
+        # 開票用ボタンを追加
+        await message.add_reaction(self.end_button)
 
     def save_json(self, json_data):
         save_file = open('vote.json', 'w')
@@ -82,8 +87,7 @@ class Vote(commands.Cog):
             await reaction.remove(user)
             return
         # 投票前だった場合、投票済みリストにidを追加
-        else:
-            json_data[message_id]['vote_user'] = {user_id: emoji}
+        json_data[message_id]['vote_user'][user_id] = emoji
 
         # 投票済みリストが更新されたのでjsonも更新
         print(json_data)
@@ -114,9 +118,27 @@ class Vote(commands.Cog):
         json_data[message_id]['vote_user'] = vote_user
         self.save_json(json_data)
 
-    # memo
-    # リアクション追加→投票済みでリアクション削除→on_reaction_removeが反応して、投票済みリストからid削除→リアクションはついているが投票済みリストにidがないので、2つめのリアクションをつけることができる
-    # vote.jsonにuser_idと絵文字をセットにして保存→on_reaction_removeが実行されたときに外された絵文字とjsonに保存された絵文字を比較→一緒だった場合のみjsonからidを削除
+    @ commands.Cog.listener(name='on_reaction_add')
+    async def press_end_button(self, reaction, user):
+        Received_emoji = reaction.emoji
+        # 押されたリアクションがend_buttonと同じか確認
+        if Received_emoji != self.end_button:
+            return
+
+        json_data = self.load_json()
+        message_id = str(reaction.message.id)
+        user_id = str(user.id)
+        executor = json_data[message_id]['executor']
+
+        # json_dataにメッセージIDが存在するか確認
+        if message_id not in json_data:
+            return
+        # executorとリアクションをつけた人が同じか確認
+        elif user_id not in executor:
+            return
+
+        result = self.aggregate(reaction.message.id)
+
     @ commands.group(invoke_without_command=True)
     async def vote(self, ctx):
         await ctx.send('そのうち使い方を実装するよ')
@@ -132,7 +154,7 @@ class Vote(commands.Cog):
 
         text = 'とうひょー \n'
 
-        i = 1
+        i = 0
 
         for c in args:
             text += f'{emoji_list[i]} : {c}\n'
