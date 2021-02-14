@@ -65,7 +65,7 @@ class Other(commands.Cog):
 
         await ctx.send(f'{mention}さんへ \n ごめんね。\n {ctx.author.mention}より。')
 
-    @commands.Cog.listener(name='on_message')
+    @ commands.Cog.listener(name='on_message')
     async def edit_ping(self, message):
         if message.content.startswith('PONG ') and message.author.id == self.bot.user.id:  # noqa
             time_now = message.content.replace('PONG ', '')
