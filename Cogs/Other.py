@@ -50,7 +50,7 @@ class Other(commands.Cog):
         ))
 
     @commands.command()
-    async def sorry(self,ctx):
+    async def sorry(self, ctx):
         messages = await ctx.channel.history(limit=20).flatten()
         id_list = []
         for msg in messages:
@@ -62,10 +62,8 @@ class Other(commands.Cog):
                     break
 
         mention = id_list[1]
-            
+
         await ctx.send(f'{mention}さんへ \n ごめんね。\n {ctx.author.mention}より。')
-
-
 
     @commands.Cog.listener(name='on_message')
     async def edit_ping(self, message):
