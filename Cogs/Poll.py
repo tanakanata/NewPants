@@ -4,7 +4,7 @@ import datetime
 from discord.ext import commands
 
 
-class Vote(commands.Cog):
+class Poll(commands.Cog):
     def __init__(self, bot: commands.bot):
         self.bot = bot
         print(__name__)
@@ -22,11 +22,11 @@ class Vote(commands.Cog):
         await message.add_reaction(self.end_button)
 
     def save_json(self, json_data):
-        save_file = open('vote.json', 'w')
+        save_file = open('poll.json', 'w')
         json.dump(json_data, save_file)
 
     def load_json(self):
-        f = open('vote.json', 'r')
+        f = open('poll.json', 'r')
         json_data = json.load(f)
         return json_data
 
@@ -45,19 +45,19 @@ class Vote(commands.Cog):
             "executor": user.id,
             "channel_id": channel_id,
             "count_time": count_time_text,
-            "vote_user": {}
+            "poll_user": {}
         }
 
         # json_dataの内容が新しくなったのでファイルに保存
         self.save_json(json_data)
 
     async def aggregate(self, message_id):
-        json_data = self.load_json
-        channel_id = json_data[message_id]["channel_id"]
+        json_data = self.load_json()
+        channel_id = json_data[message_id]['channel_id']
         channel = self.bot.get_channel(channel_id)
-        vote_message = await channel.fetch_message(message_id)
+        poll_message = await channel.fetch_message(int(message_id))
 
-        reactions = vote_message.reactions
+        reactions = poll_message.reactions
 
         result = {}
 
@@ -66,10 +66,21 @@ class Vote(commands.Cog):
 
         return result
 
+    async def get_message(self, channel_id, message_id):
+        channel = self.bot.get_channel(channel_id)
+        message = await channel.fetch_message(int(message_id))
+        content = message.content
+
+        return content
+
     @ commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         print('リアクション追加されたよ')
         print(reaction.emoji)
+        Received_emoji = reaction.emoji
+        # 押されたリアクションがend_buttonと同じか確認
+        if Received_emoji != self.end_button:
+            return
         # json読み出し
         json_data = self.load_json()
 
@@ -78,16 +89,16 @@ class Vote(commands.Cog):
         if message_id not in json_data:
             return
 
-        vote_user = json_data[message_id]['vote_user']
+        poll_user = json_data[message_id]['poll_user']
         user_id = str(user.id)
         emoji = reaction.emoji
 
         # すでに投票済みだった場合、リアクションをremove
-        if user_id in vote_user:
+        if user_id in poll_user:
             await reaction.remove(user)
             return
         # 投票前だった場合、投票済みリストにidを追加
-        json_data[message_id]['vote_user'][user_id] = emoji
+        json_data[message_id]['poll_user'][user_id] = emoji
 
         # 投票済みリストが更新されたのでjsonも更新
         print(json_data)
@@ -105,21 +116,25 @@ class Vote(commands.Cog):
         if message_id not in json_data:
             return
 
-        vote_user = json_data[message_id]['vote_user']
+        poll_user = json_data[message_id]['poll_user']
         remove_data = (user_id, reaction.emoji)
 
-        if remove_data not in vote_user.items():
+        if remove_data not in poll_user.items():
             return
 
         # リアクションを外した人のidを投票済みリストから削除
-        del vote_user[user_id]
+        del poll_user[user_id]
 
         # 投票済みリストが更新されたのでjsonも更新
-        json_data[message_id]['vote_user'] = vote_user
+        json_data[message_id]['poll_user'] = poll_user
         self.save_json(json_data)
 
     @ commands.Cog.listener(name='on_reaction_add')
     async def press_end_button(self, reaction, user):
+        # リアクションを追加したユーザーがBotだったらreturn
+        if user.bot:
+            return
+
         Received_emoji = reaction.emoji
         # 押されたリアクションがend_buttonと同じか確認
         if Received_emoji != self.end_button:
@@ -134,17 +149,31 @@ class Vote(commands.Cog):
         if message_id not in json_data:
             return
         # executorとリアクションをつけた人が同じか確認
-        elif user_id not in executor:
+        elif user_id == executor:
             return
 
-        result = self.aggregate(reaction.message.id)
+        result = await self.aggregate(message_id)
+
+        channel_id = json_data[message_id]["channel_id"]
+        channel = self.bot.get_channel(channel_id)
+
+        original_message = await self.get_message(channel_id, message_id)
+
+        await channel.send(content=original_message)
+
+        text = ''
+        for k, v in result.items():
+            if k != self.end_button:
+                text += f'{k} : {v}' + '\n'
+
+        await channel.send(content=text)
 
     @ commands.group(invoke_without_command=True)
-    async def vote(self, ctx):
-        await ctx.send('そのうち使い方を実装するよ')
+    async def poll(self, ctx):
+        await ctx.send('!poll')
 
-    @ vote.command()
-    async def start(self, ctx, min: typing.Optional[int] = 30, *args):
+    @ poll.command()
+    async def start(self, ctx, min: typing.Optional[int] = 30, question='question',  *args):  # noqa
         emoji_list = ['1⃣', '2⃣', '3⃣', '4⃣',
                       '5⃣', '6⃣', '7⃣', '8⃣', '9⃣', '🔟']
         if len(args) >= 11:
@@ -152,7 +181,7 @@ class Vote(commands.Cog):
         elif len(args) <= 1:
             await ctx.send('少ない')
 
-        text = 'とうひょー \n'
+        text = question + '\n'
 
         i = 0
 
@@ -171,14 +200,14 @@ class Vote(commands.Cog):
 
         self.make_json_data(message, channel_id, user, min)
 
-    @ vote.command()
-    async def result(self, ctx, vote_message_id: str):
+    @ poll.command()
+    async def result(self, ctx, poll_message_id: str):
         json_data = self.load_json
         # json_dataにメッセージIDが存在するか確認
-        if vote_message_id not in json_data:
+        if poll_message_id not in json_data:
             return
 
-        result = self.aggregate(vote_message_id)
+        result = self.aggregate(poll_message_id)
 
         await ctx.send(result)
 
@@ -188,4 +217,4 @@ class Vote(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Vote(bot))
+    bot.add_cog(Poll(bot))
