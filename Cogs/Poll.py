@@ -164,7 +164,8 @@ class Poll(commands.Cog):
         text = ''
         for k, v in result.items():
             if k != self.end_button:
-                text += f'{k} : {v}' + '\n'
+                v = int(v) - 1
+                text += f'{k} : {v}　'
 
         await channel.send(content=text)
 
@@ -173,19 +174,19 @@ class Poll(commands.Cog):
         await ctx.send('!poll')
 
     @ poll.command()
-    async def start(self, ctx, min: typing.Optional[int] = 30, question='question',  *args):  # noqa
+    async def start(self, ctx, min: typing.Optional[int] = 30, question='くえすちょん？',  *items):  # noqa
         emoji_list = ['1⃣', '2⃣', '3⃣', '4⃣',
                       '5⃣', '6⃣', '7⃣', '8⃣', '9⃣', '🔟']
-        if len(args) >= 11:
+        if len(items) >= 11:
             await ctx.send('多い')
-        elif len(args) <= 1:
+        elif len(items) <= 1:
             await ctx.send('少ない')
 
         text = question + '\n'
 
         i = 0
 
-        for c in args:
+        for c in items:
             text += f'{emoji_list[i]} : {c}\n'
             i += 1
 
@@ -194,7 +195,7 @@ class Poll(commands.Cog):
         user = ctx.author
         channel_id = ctx.message.channel.id
 
-        item_count = len(args)
+        item_count = len(items)
 
         await self.add_reaction(message, item_count)
 
@@ -210,10 +211,6 @@ class Poll(commands.Cog):
         result = self.aggregate(poll_message_id)
 
         await ctx.send(result)
-
-    # @ commands.Cog.listener()
-    # async def on_command_error(ctx, error):
-    #     await ctx.send(error)
 
 
 def setup(bot):
