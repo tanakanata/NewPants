@@ -179,8 +179,10 @@ class Poll(commands.Cog):
                       '5⃣', '6⃣', '7⃣', '8⃣', '9⃣', '🔟']
         if len(items) >= 11:
             await ctx.send('多い')
+            return
         elif len(items) <= 1:
             await ctx.send('少ない')
+            return
 
         text = question + '\n'
 
