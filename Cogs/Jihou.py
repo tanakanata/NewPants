@@ -85,6 +85,8 @@ class Jihou(commands.Cog):
             id_list = []
             channel = self.bot.get_channel(ch_id)
             members = channel.members
+            # ゼロクリア
+            self.member_count[ch_id] = 0
             for member_id in members:
                 if member_id.bot:
                     pass
@@ -93,8 +95,10 @@ class Jihou(commands.Cog):
                     self.member_count[ch_id] = len(id_list)
 
         print('OK')
-        print(max(self.member_count, key=self.member_count.get))
-        self.channel_id = max(self.member_count, key=self.member_count.get)
+        # カウントが一番大きいチャンネルを取得
+        max_user_channel = max(self.member_count, key=self.member_count.get)
+        print(max_user_channel)
+        self.channel_id = max_user_channel
 
     @commands.Cog.listener(name='on_ready')
     async def change_presence(self):

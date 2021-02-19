@@ -30,7 +30,7 @@ class Poll(commands.Cog):
         json_data = json.load(f)
         return json_data
 
-    def make_json_data(self, message, channel_id, user, min):
+    def make_json_data(self, message, channel_id, user, min, mode=0):
         # 最新のデータを読み出し
         json_data = self.load_json()
 
@@ -45,6 +45,7 @@ class Poll(commands.Cog):
             "executor": user.id,
             "channel_id": channel_id,
             "count_time": count_time_text,
+            "mode": mode,
             "poll_user": {}
         }
 
@@ -78,8 +79,8 @@ class Poll(commands.Cog):
         print('リアクション追加されたよ')
         print(reaction.emoji)
         Received_emoji = reaction.emoji
-        # 押されたリアクションがend_buttonと同じか確認
-        if Received_emoji != self.end_button:
+        # 押されたリアクションがend_buttonと同じだった場合処理終了
+        if Received_emoji == self.end_button:
             return
         # json読み出し
         json_data = self.load_json()
@@ -92,21 +93,22 @@ class Poll(commands.Cog):
         poll_user = json_data[message_id]['poll_user']
         user_id = str(user.id)
         emoji = reaction.emoji
+        mode = json_data[message_id]['mode']
 
-        # すでに投票済みだった場合、リアクションをremove
-        if user_id in poll_user:
-            await reaction.remove(user)
-            return
+        # モードがマルチではなかった場合投票済みユーザか確認
+        if str(mode) != "1":
+            # すでに投票済みだった場合、リアクションをremove
+            if user_id in poll_user:
+                await reaction.remove(user)
+                return
         # 投票前だった場合、投票済みリストにidを追加
         json_data[message_id]['poll_user'][user_id] = emoji
 
         # 投票済みリストが更新されたのでjsonも更新
-        print(json_data)
         self.save_json(json_data)
 
     @ commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
-        print(user.name)
         # json読み出し
         json_data = self.load_json()
 
@@ -143,13 +145,16 @@ class Poll(commands.Cog):
         json_data = self.load_json()
         message_id = str(reaction.message.id)
         user_id = str(user.id)
-        executor = json_data[message_id]['executor']
 
         # json_dataにメッセージIDが存在するか確認
         if message_id not in json_data:
             return
-        # executorとリアクションをつけた人が同じか確認
-        elif user_id == executor:
+
+        # 対象アンケートの作成者を取得
+        executor = json_data[message_id]['executor']
+
+        # executorとリアクションをつけた人が同じじゃない場合処理終了
+        if str(user_id) != str(executor):
             return
 
         result = await self.aggregate(message_id)
@@ -174,7 +179,7 @@ class Poll(commands.Cog):
         await ctx.send('!poll')
 
     @ poll.command()
-    async def start(self, ctx, min: typing.Optional[int] = 30, question='くえすちょん？',  *items):  # noqa
+    async def single(self, ctx, min: typing.Optional[int] = 30, question='くえすちょん？',  *items):  # noqa
         emoji_list = ['1⃣', '2⃣', '3⃣', '4⃣',
                       '5⃣', '6⃣', '7⃣', '8⃣', '9⃣', '🔟']
         if len(items) >= 11:
@@ -202,6 +207,37 @@ class Poll(commands.Cog):
         await self.add_reaction(message, item_count)
 
         self.make_json_data(message, channel_id, user, min)
+
+    @ poll.command()
+    async def multi(self, ctx, min: typing.Optional[int] = 30, question='くえすちょん？',  *items):  # noqa
+        mode = 1
+        emoji_list = ['1⃣', '2⃣', '3⃣', '4⃣',
+                      '5⃣', '6⃣', '7⃣', '8⃣', '9⃣', '🔟']
+        if len(items) >= 11:
+            await ctx.send('多い')
+            return
+        elif len(items) <= 1:
+            await ctx.send('少ない')
+            return
+
+        text = question + '\n'
+
+        i = 0
+
+        for c in items:
+            text += f'{emoji_list[i]} : {c}\n'
+            i += 1
+
+        message = await ctx.send(text)
+
+        user = ctx.author
+        channel_id = ctx.message.channel.id
+
+        item_count = len(items)
+
+        await self.add_reaction(message, item_count)
+
+        self.make_json_data(message, channel_id, user, min, mode)
 
     @ poll.command()
     async def result(self, ctx, poll_message_id: str):
