@@ -144,6 +144,10 @@ class Other(commands.Cog):
         # ランダムで聞き間違いを選択
         choice = random.choice(json_data)
 
+        # choiceの原文が空白だった場合、空文字ではなくスペースに変更
+        if len(choice['text']) == 0:
+            choice['text'] = "　"
+
         # メッセージ送信
         if len(args) == 2 or len(args) == 0:
             await ctx.send('言った人：' + choice['talker'] + '\n'
