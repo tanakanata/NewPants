@@ -79,12 +79,17 @@ class Other(commands.Cog):
             except ValueError:
                 await ctx.send('変なもの入力してんじゃねーぞ')
                 return
-        elif len(args) == 1 and args[0] != 'spoiler':
+        elif len(args) == 1 and args[0] != 'spoiler' and args[0] != 'spoiliter':
             await ctx.send('使い方知ってる？？？？？？？？？')
             return
-        if len(args) == 3 and args[2] != 'spoiler':
+        if len(args) == 3 and args[2] != 'spoiler' and args[2] != 'spoiliter':
             await ctx.send('使い方知ってる？？？？？？？？？')
             return
+        
+        # 分割でスポイラーするか
+        spoiliter = False
+        if (len(args) == 1 and args[0] == 'spoiliter') or (len(args) == 3 and args[2] == 'spoiliter') :
+            spoiliter = True
         
         # 引数が1か0だった場合、ランダム日付で取得
         if len(args) == 0 or len(args) == 1:
@@ -162,11 +167,38 @@ class Other(commands.Cog):
             + '聞き間違え：' + choice['mistake'] + '\n'
             + '日付：' + choice['date'])
         elif len(args) == 3 or len(args) == 1:
-            await ctx.send('言った人：||' + choice['talker'] + '||\n'
-            + '聞き間違えた人：||' + choice['listener'] + '||\n'
-            + '原文：||' + choice['text'] + '||\n'
-            + '聞き間違え：||' + choice['mistake'] + '||\n'
-            + '日付：||' + choice['date'] + '||')
+            # スポイラーを切り分けで行う
+            if (spoiliter):
+                talker = ""
+                listener = ""
+                text = ""
+                mistake = ""
+                date = ""
+                # 一文字ずつ設定
+                for key, value in choice.items():
+                    for val in str(value).replace(' ', ''):
+                        if(key == 'talker'):
+                            talker = talker + "||" + val + "||"
+                        elif(key == 'listener'):
+                            listener = listener + "||" + val + "||"
+                        elif(key == 'text'):
+                            text = text + "||" + val + "||"
+                        elif(key == 'mistake'):
+                            mistake = mistake + "||" + val + "||"
+                        elif(key == 'date'):
+                            date = date + "||" + val + "||"
+                    
+                await ctx.send('言った人：' + talker + '\n'
+                + '聞き間違えた人：' + listener + '\n'
+                + '原文：' + text + '\n'
+                + '聞き間違え：' + mistake + '\n'
+                + '日付：' + date)
+            else:
+                await ctx.send('言った人：||' + choice['talker'] + '||\n'
+                + '聞き間違えた人：||' + choice['listener'] + '||\n'
+                + '原文：||' + choice['text'] + '||\n'
+                + '聞き間違え：||' + choice['mistake'] + '||\n'
+                + '日付：||' + choice['date'] + '||')
 
 
     @ commands.Cog.listener(name='on_message')
