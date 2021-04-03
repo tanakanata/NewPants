@@ -82,7 +82,7 @@ class Other(commands.Cog):
         elif len(args) == 1 and args[0] != 'spoiler':
             await ctx.send('使い方知ってる？？？？？？？？？')
             return
-        elif len(args) == 3 and args[2] != 'spoiler':
+        if len(args) == 3 and args[2] != 'spoiler':
             await ctx.send('使い方知ってる？？？？？？？？？')
             return
         
@@ -144,9 +144,15 @@ class Other(commands.Cog):
         # ランダムで聞き間違いを選択
         choice = random.choice(json_data)
 
-        # choiceの原文が空白だった場合、空文字ではなくスペースに変更
+        # choice内の各項目が空白だった場合、空文字ではなくスペースに変更（日付は入力前提の為スルー）
+        if len(choice['talker']) == 0:
+            choice['talker'] = "　"
+        if len(choice['listener']) == 0:
+            choice['listener'] = "　"
         if len(choice['text']) == 0:
             choice['text'] = "　"
+        if len(choice['mistake']) == 0:
+            choice['mistake'] = "　"
 
         # メッセージ送信
         if len(args) == 2 or len(args) == 0:
