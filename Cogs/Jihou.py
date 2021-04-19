@@ -62,19 +62,19 @@ class Jihou(commands.Cog):
             self.interval = 0.5
 
     def write_json(self):
-        json_date = {}
-        json_date["channel_list"] = self.channel_list
-        json_date["channel_id"] = self.channel_id
+        json_data = {}
+        json_data["channel_list"] = self.channel_list
+        json_data["channel_id"] = self.channel_id
         wf = open('channels.json', 'w')
-        json.dump(json_date, wf)
+        json.dump(json_data, wf)
 
     def read_json(self):
         rf = open('channels.json', 'r')
-        json_date = json.load(rf)
-        self.channel_list = json_date['channel_list']
+        json_data = json.load(rf)
+        self.channel_list = json_data['channel_list']
         self.channel_count = len(self.channel_list)
         self.channel_count = self.channel_count - 1
-        self.channel_id = json_date['channel_id']
+        self.channel_id = json_data['channel_id']
 
     def cog_unload(self):
         self.time_check.cancel()
