@@ -7,6 +7,7 @@ from discord.ext import commands
 import json
 import datetime
 import io
+import config
 
 
 class Image(commands.Cog):
@@ -90,7 +91,7 @@ class Image(commands.Cog):
 
         # api実行
         result = requests.get(api_url,
-            headers={'X-API-Key': 'LrTEjBryRmFCUgJWkx76G5Yd'})
+            headers={'X-API-Key': config.alpha})
         
         # 残回数取得
         leftover = result.json()['data']['attributes']['api']['free_calls']
@@ -114,7 +115,7 @@ class Image(commands.Cog):
         # post実行
         result = requests.post(api_url,
             data = {'size' : 'auto'},
-            headers={'X-API-Key': 'LrTEjBryRmFCUgJWkx76G5Yd'},
+            headers={'X-API-Key': config.alpha},
             files={'image_file' : io.BytesIO(await ctx.message.attachments[0].read())})
 
         # status_codeを代入
