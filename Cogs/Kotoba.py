@@ -9,15 +9,13 @@ class Kotoba(commands.Cog):
         self.kakasi = kakasi()
 
     @commands.command()
-    async def boin(self, ctx, *arg):
-        if len(arg) == 0:
-            await ctx.send('文章を入力しろ　ボケ　カス　雑魚　無能　ハゲ　増毛')
-            return
+    async def boin(self, ctx, *, arg):
+        # ルールに従って文字列を置換
+        rep_word = str.maketrans({'ー': '〜', '-': '〜'})
+        mojiretsu = arg.translate(rep_word)
+        # Spoilerを解除
+        mojiretsu = mojiretsu.replace('||', '')
         # 漢字・ひらがなをカタカナに変換
-        arg = str(arg)
-        mojiretsu = arg.translate(str.maketrans({'"': '', "ー": "～", "ｰ": "～"}))
-        mojiretsu = mojiretsu.replace("||", "").replace('"', '').replace(
-            "('", "").replace("',)", "").replace("')", "").replace("', '", " ")
         self.kakasi.setMode('J', 'K')
         self.kakasi.setMode("H", "K")
         conv = self.kakasi.getConverter()
