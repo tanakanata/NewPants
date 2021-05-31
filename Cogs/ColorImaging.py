@@ -122,7 +122,7 @@ class ColorImaging(commands.Cog):
 
             self.imaging = False
 
-    @commands.command()
+    @commands.command(aliases=['c', 'hex'])
     async def color(self, ctx, *args):
         RGB = []
         while(self.imaging):
