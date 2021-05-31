@@ -5,4 +5,5 @@ opencv-python==4.4.0.46
 pykakasi==2.0.1
 pytz==2020.4
 requests==2.25.1
+urlextract==1.2.0
 
