@@ -7,6 +7,7 @@ from discord.ext import commands
 import json
 import datetime
 import io
+from urlextract import URLExtract
 
 import config
 
@@ -139,11 +140,19 @@ class Image(commands.Cog):
 
     async def get_last_image(self, ctx: commands.Context) -> discord.Attachment:
         last_attachment = None
+        last_url = None
+        extractor = URLExtract()
         async for m in ctx.message.channel.history(before=ctx.message, limit=25):
             if m.attachments:
                 last_attachment = m.attachments[0]
                 if self.is_image(last_attachment.url):
                     return last_attachment
+            if m.content:
+                all_urls = extractor.find_urls(m.content)
+                if all_urls:
+                    last_url = all_urls[0]
+                    if self.is_image(last_url):
+                        return AttachmentLike(last_url)
 
         raise RuntimeError('Image not found')
 
@@ -152,7 +161,7 @@ class Image(commands.Cog):
         try:
             response = requests.head(url)
             mime = response.headers.get('Content-type', '').lower()
-            if any([mime == x for x in ['image/png', 'image/pjpeg', 'image/jpeg', 'image/x-icon']]):
+            if "image" in mime:
                 return True
             else:
                 return False
@@ -162,3 +171,17 @@ class Image(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Image(bot))
+
+
+# DiscordのAttachmentっぽいクラス
+# urlからfilenameっぽいものを作る
+# url, filename, async read() がほしい
+# https://discordpy.readthedocs.io/en/stable/api.html#attachment
+class AttachmentLike:
+    def __init__(self, url: str) -> None:
+        self.url = url
+        filename = url.rstrip("/").split("/")[-1]
+        self.filename = f"#{filename}.png"
+
+    async def read(self) -> bytes:
+        return requests.get(self.url).content
