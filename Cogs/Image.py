@@ -105,7 +105,7 @@ class Image(commands.Cog):
 
         try:
             # アップロードした画像URL、画像名取得
-            img_url = self.get_last_image(ctx)
+            img_url = await self.get_last_image(ctx)
         except:  # noqa
             await ctx.send('画像が足りないよ？')
             return
@@ -138,7 +138,7 @@ class Image(commands.Cog):
         else:
             await ctx.send('APIがエラー吐いた')
 
-    def get_last_image(self, ctx: commands.Context) -> str:
+    async def get_last_image(self, ctx: commands.Context) -> str:
         last_attachment = None
         async for m in self.bot.logs_from(ctx.message.channel, before=ctx.message, limit=25):
             if m.attachments:
