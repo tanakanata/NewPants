@@ -7,11 +7,14 @@ from discord.ext import commands
 import json
 import datetime
 import io
+
 import config
 
 
 class Image(commands.Cog):
-    def __init__(self, bot: commands.bot):
+    bot: commands.bot.Bot
+
+    def __init__(self, bot: commands.bot.Bot):
         print('Image OK')
         self.bot = bot
         self.cv2 = cv2
@@ -85,14 +88,13 @@ class Image(commands.Cog):
 
     @commands.command()
     async def alpha(self, ctx, mode='n'):
-        
         # 残り回数確認APIURL
         api_url = "https://api.remove.bg/v1.0/account"
 
         # api実行
         result = requests.get(api_url,
             headers={'X-API-Key': config.alpha})
-        
+
         # 残回数取得
         leftover = result.json()['data']['attributes']['api']['free_calls']
 
@@ -103,8 +105,7 @@ class Image(commands.Cog):
 
         try:
             # アップロードした画像URL、画像名取得
-            img_url = ctx.message.attachments[0].url
-            file_name = ctx.message.attachments[0].filename
+            img_url = self.get_last_image(ctx)
         except:  # noqa
             await ctx.send('画像が足りないよ？')
             return
@@ -112,11 +113,13 @@ class Image(commands.Cog):
         # 背景透過のAPIURL
         api_url = "https://api.remove.bg/v1.0/removebg"
 
+        image = requests.get(img_url).content
+
         # post実行
         result = requests.post(api_url,
             data = {'size' : 'auto'},
             headers={'X-API-Key': config.alpha},
-            files={'image_file' : io.BytesIO(await ctx.message.attachments[0].read())})
+            files={'image_file' : io.BytesIO(image)})
 
         # status_codeを代入
         status_code = result.status_code
@@ -127,13 +130,36 @@ class Image(commands.Cog):
             if len(result.content) > 8178892:
                 await ctx.send('8M超えました。')
                 return
-            
-            f = discord.File(io.BytesIO(result.content), filename=file_name)
-        
+
+            f = discord.File(io.BytesIO(result.content))
+
             await ctx.send(content=('でけた(今月残り回数：{0}回)'.format(leftover - 1)), file=f)
 
         else:
             await ctx.send('APIがエラー吐いた')
-        
+
+    def get_last_image(self, ctx: commands.Context) -> str:
+        last_attachment = None
+        async for m in self.bot.logs_from(ctx.message.channel, before=ctx.message, limit=25):
+            if m.attachments:
+                last_attachment = m.attachments[0]['url']
+                if self.is_image(last_attachment):
+                    return last_attachment
+
+        raise RuntimeError('Image not found')
+
+
+    def is_image(self, url: str):
+        try:
+            response = requests.head(url)
+            mime = response.headers.get('Context-type', '').lower()
+            if any([mime == x for x in ['image/png', 'image/pjpeg', 'image/jpeg', 'image/x-icon']]):
+                return True
+            else:
+                return False
+        except:
+            return False
+
+
 def setup(bot):
     bot.add_cog(Image(bot))
