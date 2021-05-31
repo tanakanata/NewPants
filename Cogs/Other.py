@@ -65,14 +65,14 @@ class Other(commands.Cog):
         mention = id_list[1]
 
         await ctx.send(f'{mention}さんへ \n ごめんね。\n {ctx.author.mention}より。')
-    
+
     @commands.command()
     async def mistake(self, ctx, *args):
         # 聞き間違え一覧取得APIのURL
         url = "https://script.google.com/macros/s/AKfycbwB3rETygKzPJwYJi4Or6NE4ho1NDP03MdxukyUoug_HpiYiSA83TbivQnc1KvgYLfE/exec"
 
         # バリデーションチェック
-        if len(args) == 2 or len(args) == 3 :
+        if len(args) == 2 or len(args) == 3:
             try:
                 year = int(args[0])
                 month = int(args[1])
@@ -85,12 +85,12 @@ class Other(commands.Cog):
         if len(args) == 3 and args[2] != 'spoiler' and args[2] != 'spoiliter':
             await ctx.send('使い方知ってる？？？？？？？？？')
             return
-        
+
         # 分割でスポイラーするか
         spoiliter = False
-        if (len(args) == 1 and args[0] == 'spoiliter') or (len(args) == 3 and args[2] == 'spoiliter') :
+        if (len(args) == 1 and args[0] == 'spoiliter') or (len(args) == 3 and args[2] == 'spoiliter'):
             spoiliter = True
-        
+
         # 引数が1か0だった場合、ランダム日付で取得
         if len(args) == 0 or len(args) == 1:
             dt_now = datetime.datetime.now()
@@ -101,14 +101,14 @@ class Other(commands.Cog):
                 month = random.randint(1, dt_now.month)
             else:
                 month = random.randint(1, 12)
-        
+
         # バリデーション続き
         if len(str(year)) > 1900 or len(str(month)) > 1900:
             await ctx.send('Discordの文字数制限ってご存知ですか？？？？？？？？')
             return
-        
-        #post実行
-        result = requests.post(url, {'year' : year, 'month' : month})
+
+        # post実行
+        result = requests.post(url, {'year': year, 'month': month})
 
         # status_codeを代入
         status_code = result.status_code
@@ -131,8 +131,8 @@ class Other(commands.Cog):
                         month = random.randint(1, dt_now.month)
                     else:
                         month = random.randint(1, 12)
-                    #post実行
-                    result = requests.post(url, {'year' : year, 'month' : month})
+                    # post実行
+                    result = requests.post(url, {'year': year, 'month': month})
 
                     # status_codeを代入
                     status_code = result.status_code
@@ -162,10 +162,10 @@ class Other(commands.Cog):
         # メッセージ送信
         if len(args) == 2 or len(args) == 0:
             await ctx.send('言った人：' + choice['talker'] + '\n'
-            + '聞き間違えた人：' + choice['listener'] + '\n'
-            + '原文：' + choice['text'] + '\n'
-            + '聞き間違え：' + choice['mistake'] + '\n'
-            + '日付：' + choice['date'])
+                           + '聞き間違えた人：' + choice['listener'] + '\n'
+                           + '原文：' + choice['text'] + '\n'
+                           + '聞き間違え：' + choice['mistake'] + '\n'
+                           + '日付：' + choice['date'])
         elif len(args) == 3 or len(args) == 1:
             # スポイラーを切り分けで行う
             if (spoiliter):
@@ -187,19 +187,18 @@ class Other(commands.Cog):
                             mistake = mistake + "||" + val + "||"
                         elif(key == 'date'):
                             date = date + "||" + val + "||"
-                    
+
                 await ctx.send('言った人：' + talker + '\n'
-                + '聞き間違えた人：' + listener + '\n'
-                + '原文：' + text + '\n'
-                + '聞き間違え：' + mistake + '\n'
-                + '日付：' + date)
+                               + '聞き間違えた人：' + listener + '\n'
+                               + '原文：' + text + '\n'
+                               + '聞き間違え：' + mistake + '\n'
+                               + '日付：' + date)
             else:
                 await ctx.send('言った人：||' + choice['talker'] + '||\n'
-                + '聞き間違えた人：||' + choice['listener'] + '||\n'
-                + '原文：||' + choice['text'] + '||\n'
-                + '聞き間違え：||' + choice['mistake'] + '||\n'
-                + '日付：||' + choice['date'] + '||')
-
+                               + '聞き間違えた人：||' + choice['listener'] + '||\n'
+                               + '原文：||' + choice['text'] + '||\n'
+                               + '聞き間違え：||' + choice['mistake'] + '||\n'
+                               + '日付：||' + choice['date'] + '||')
 
     @ commands.Cog.listener(name='on_message')
     async def edit_ping(self, message):
