@@ -118,7 +118,7 @@ class Image(commands.Cog):
         result = requests.post(api_url,
             data = {'size' : 'auto'},
             headers={'X-API-Key': config.alpha},
-            files={'image_file' : io.BytesIO(await ctx.message.attachments[0].read())})
+            files={'image_file' : io.BytesIO(await img_attachment.read())})
 
         # status_codeを代入
         status_code = result.status_code
