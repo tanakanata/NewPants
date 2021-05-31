@@ -140,9 +140,9 @@ class Image(commands.Cog):
 
     async def get_last_image(self, ctx: commands.Context) -> str:
         last_attachment = None
-        async for m in self.bot.logs_from(ctx.message.channel, before=ctx.message, limit=25):
+        async for m in ctx.message.channel.history(before=ctx.message, limit=25):
             if m.attachments:
-                last_attachment = m.attachments[0]['url']
+                last_attachment = m.attachments[0].url
                 if self.is_image(last_attachment):
                     return last_attachment
 
@@ -152,7 +152,7 @@ class Image(commands.Cog):
     def is_image(self, url: str):
         try:
             response = requests.head(url)
-            mime = response.headers.get('Context-type', '').lower()
+            mime = response.headers.get('Content-type', '').lower()
             if any([mime == x for x in ['image/png', 'image/pjpeg', 'image/jpeg', 'image/x-icon']]):
                 return True
             else:
