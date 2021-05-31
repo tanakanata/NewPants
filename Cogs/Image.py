@@ -142,7 +142,7 @@ class Image(commands.Cog):
         last_attachment = None
         last_url = None
         extractor = URLExtract()
-        async for m in ctx.message.channel.history(before=ctx.message, limit=25):
+        async for m in ctx.message.channel.history(limit=25):
             if m.attachments:
                 last_attachment = m.attachments[0]
                 if self.is_image(last_attachment.url):
