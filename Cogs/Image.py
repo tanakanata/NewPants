@@ -105,7 +105,8 @@ class Image(commands.Cog):
 
         try:
             # アップロードした画像URL、画像名取得
-            img_url = await self.get_last_image(ctx)
+            img_attachment = await self.get_last_image(ctx)
+            filename = img_attachment.filename
         except:  # noqa
             await ctx.send('画像が足りないよ？')
             return
@@ -113,13 +114,11 @@ class Image(commands.Cog):
         # 背景透過のAPIURL
         api_url = "https://api.remove.bg/v1.0/removebg"
 
-        image = requests.get(img_url).content
-
         # post実行
         result = requests.post(api_url,
             data = {'size' : 'auto'},
             headers={'X-API-Key': config.alpha},
-            files={'image_file' : io.BytesIO(image)})
+            files={'image_file' : io.BytesIO(await ctx.message.attachments[0].read())})
 
         # status_codeを代入
         status_code = result.status_code
@@ -131,19 +130,19 @@ class Image(commands.Cog):
                 await ctx.send('8M超えました。')
                 return
 
-            f = discord.File(io.BytesIO(result.content))
+            f = discord.File(io.BytesIO(result.content), filename=filename)
 
             await ctx.send(content=('でけた(今月残り回数：{0}回)'.format(leftover - 1)), file=f)
 
         else:
             await ctx.send('APIがエラー吐いた')
 
-    async def get_last_image(self, ctx: commands.Context) -> str:
+    async def get_last_image(self, ctx: commands.Context) -> discord.Attachment:
         last_attachment = None
         async for m in ctx.message.channel.history(before=ctx.message, limit=25):
             if m.attachments:
-                last_attachment = m.attachments[0].url
-                if self.is_image(last_attachment):
+                last_attachment = m.attachments[0]
+                if self.is_image(last_attachment.url):
                     return last_attachment
 
         raise RuntimeError('Image not found')
