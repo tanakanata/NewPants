@@ -4,8 +4,6 @@ import requests
 import cv2
 import discord
 from discord.ext import commands
-import json
-import datetime
 import io
 from urlextract import URLExtract
 
@@ -108,7 +106,7 @@ class Image(commands.Cog):
 
         # 回数制限確認
         if leftover <= 0:
-            await ctx.send('月の' + len(config.alpha) * MAX_FREE_CALLS + '回越えてそうだからやめておこう')
+            await ctx.send('月の' + str(len(config.alpha) * MAX_FREE_CALLS) + '回越えてそうだからやめておこう')
             return
 
         try:
