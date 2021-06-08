@@ -97,7 +97,7 @@ class Image(commands.Cog):
             loop_count += 1
             result = requests.get(api_url,
                                   headers={'X-API-Key': alpha})
-            if result.json()['data']['attributes']['api']['free_calls'] <= 0:
+            if result.json()['data']['attributes']['api']['free_calls'] > 0:
                 alpha_api_key = alpha
                 break
 
