@@ -89,19 +89,26 @@ class Image(commands.Cog):
 
     @commands.command()
     async def alpha(self, ctx, mode='n'):
+        MAX_FREE_CALLS = 50
         # 残り回数確認APIURL
         api_url = "https://api.remove.bg/v1.0/account"
 
-        # api実行
-        result = requests.get(api_url,
-            headers={'X-API-Key': config.alpha})
+        # apikeyの数だけループ
+        loop_count = 0
+        for alpha in config.alpha:
+            loop_count += 1
+            result = requests.get(api_url,
+                headers={'X-API-Key': alpha})
+            if result.jsoin()['data']['attributes']['api']['free_calls'] != 0:
+                alpha_api_key = alpha
+                break
 
         # 残回数取得
         leftover = result.json()['data']['attributes']['api']['free_calls']
 
-        # 50回制限確認
+        # 回数制限確認
         if leftover <= 0:
-            await ctx.send('月の50回越えてそうだからやめておこう')
+            await ctx.send('月の' + len(config.alpha) * MAX_FREE_CALLS + '回越えてそうだからやめておこう')
             return
 
         try:
@@ -118,7 +125,7 @@ class Image(commands.Cog):
         # post実行
         result = requests.post(api_url,
             data = {'size' : 'auto'},
-            headers={'X-API-Key': config.alpha},
+            headers={'X-API-Key': alpha_api_key},
             files={'image_file' : io.BytesIO(await img_attachment.read())})
 
         # status_codeを代入
@@ -132,6 +139,9 @@ class Image(commands.Cog):
                 return
 
             f = discord.File(io.BytesIO(result.content), filename=filename)
+
+            # 残回数を計算
+            leftover = MAX_FREE_CALLS * (len(config.alpha) - loop_count) + leftover
 
             await ctx.send(content=('でけた(今月残り回数：{0}回)'.format(leftover - 1)), file=f)
 
