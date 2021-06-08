@@ -98,8 +98,8 @@ class Image(commands.Cog):
         for alpha in config.alpha:
             loop_count += 1
             result = requests.get(api_url,
-                headers={'X-API-Key': alpha})
-            if result.jsoin()['data']['attributes']['api']['free_calls'] <= 0:
+                                  headers={'X-API-Key': alpha})
+            if result.json()['data']['attributes']['api']['free_calls'] <= 0:
                 alpha_api_key = alpha
                 break
 
@@ -124,9 +124,9 @@ class Image(commands.Cog):
 
         # post実行
         result = requests.post(api_url,
-            data = {'size' : 'auto'},
-            headers={'X-API-Key': alpha_api_key},
-            files={'image_file' : io.BytesIO(await img_attachment.read())})
+                               data={'size': 'auto'},
+                               headers={'X-API-Key': alpha_api_key},
+                               files={'image_file': io.BytesIO(await img_attachment.read())})
 
         # status_codeを代入
         status_code = result.status_code
@@ -165,7 +165,6 @@ class Image(commands.Cog):
                         return AttachmentLike(last_url)
 
         raise RuntimeError('Image not found')
-
 
     def is_image(self, url: str):
         try:
