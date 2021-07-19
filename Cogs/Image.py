@@ -143,6 +143,14 @@ class Image(commands.Cog):
 
             await ctx.send(content=('でけた(今月残り回数：{0}回)'.format(leftover - 1)), file=f)
 
+        elif status_code == 400:
+            error_code = result.json()['errors'][0]['code']
+            if error_code == 'unknown_foreground':
+                await ctx.send('背景が認識できませんでした')
+
+            else:
+                await ctx.send('APIがエラー吐いた')
+
         else:
             await ctx.send('APIがエラー吐いた')
 
