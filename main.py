@@ -1,8 +1,8 @@
+import os
 import discord
 from discord.ext import commands
-import config
 
-TOKEN = config.AT
+TOKEN = os.environ["TOKEN"]
 
 intents = discord.Intents.all()
 
