@@ -5,7 +5,6 @@ import cv2
 import discord
 from discord.ext import commands
 import io
-from sympy import im
 from urlextract import URLExtract
 from rembg import remove
 from PIL import Image
