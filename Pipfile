@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+discord = "==1.0.1"
+"discord.py" = {version = "==1.6.0", extras = ["voice"]}
+numpy = "==1.19.4"
+opencv-python = "==4.4.0.46"
+pykakasi = "==2.0.1"
+pytz = "==2020.4"
+requests = "==2.25.1"
+urlextract = "==1.2.0"
+rembg = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"

@@ -5,7 +5,10 @@ import cv2
 import discord
 from discord.ext import commands
 import io
+from sympy import im
 from urlextract import URLExtract
+from rembg import remove
+from PIL import Image
 
 import config
 
@@ -153,6 +156,30 @@ class Image(commands.Cog):
 
         else:
             await ctx.send('APIがエラー吐いた')
+
+    @commands.command()
+    async def rembg(self, ctx):
+        try:
+            # アップロードした画像URL、画像名取得
+            img_attachment = await self.get_last_image(ctx)
+            filename = img_attachment.filename
+        except:  # noqa
+            await ctx.send('画像が足りないよ？')
+            return
+
+        image = Image.open(io.BytesIO(requests.get(img_attachment.url).content))
+
+        output = remove(image)
+        output.save('temp/' + filename)
+
+        if os.path.getsize('temp/' + filename) > 8178892:
+            await ctx.send('8M超えました。')
+            return
+
+        with open('temp/' + filename, "rb") as f:
+                f = discord.File(f, filename=filename)
+
+        os.remove('temp/' + filename)
 
     async def get_last_image(self, ctx: commands.Context) -> discord.Attachment:
         last_attachment = None
