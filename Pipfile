@@ -11,6 +11,7 @@ pykakasi = "*"
 numpy = "*"
 opencv-python = "*"
 "discord.py" = {extras = ["voice"], version = "*"}
+rembg = "*"
 
 [dev-packages]
 
