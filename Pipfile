@@ -4,10 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-discord = "==1.0.1"
-"discord.py" = {version = "==1.6.0", extras = ["voice"]}
-numpy = "==1.19.4"
-opencv-python = "==4.4.0.46"
+discord = "*"
+"discord.py" = {version = "*", extras = ["voice"]}
+numpy = "*"
+opencv-python = "*"
 pykakasi = "==2.0.1"
 pytz = "==2020.4"
 requests = "==2.25.1"
