@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 discord = "*"
-"discord.py" = {version = "*", extras = ["voice"]}
 numpy = "*"
 opencv-python = "*"
 pykakasi = "==2.0.1"
@@ -13,6 +12,7 @@ pytz = "==2020.4"
 requests = "==2.25.1"
 urlextract = "==1.2.0"
 rembg = "*"
+py-cord = "*"
 
 [dev-packages]
 
