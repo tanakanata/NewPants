@@ -45,7 +45,7 @@ class Other(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
         # 日本時間の現在日付を取得
-        naive_dt = datetime.datetime.now(jst)
+        naive_dt = datetime.datetime.now(self.jst)
         await ctx.send('PONG {0}'.format(
             naive_dt.strftime('%Y-%m-%d %H:%M:%S.%f')
         ))
