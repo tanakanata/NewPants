@@ -5,11 +5,11 @@ import pytz
 from discord.ext import commands
 import requests
 
-
 class Other(commands.Cog):
     def __init__(self, bot: commands.bot):
         print('Other OK')
         self.bot = bot
+        self.jst = pytz.timezone('Asia/Tokyo')
 
     @commands.command()
     async def help(self, ctx):
@@ -44,10 +44,10 @@ class Other(commands.Cog):
 
     @commands.command()
     async def ping(self, ctx):
+        # 日本時間の現在日付を取得
+        naive_dt = datetime.datetime.now(jst)
         await ctx.send('PONG {0}'.format(
-            pytz.timezone('Asia/Tokyo').localize(
-                (ctx.message.created_at + datetime.timedelta(hours=9))
-            ).strftime('%Y-%m-%d %H:%M:%S.%f')
+            naive_dt.strftime('%Y-%m-%d %H:%M:%S.%f')
         ))
 
     @commands.command()
