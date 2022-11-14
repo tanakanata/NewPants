@@ -93,7 +93,7 @@ class Other(commands.Cog):
 
         # 引数が1か0だった場合、ランダム日付で取得
         if len(args) == 0 or len(args) == 1:
-            dt_now = datetime.datetime.now()
+            dt_now = datetime.datetime.now(tz=self.jst)
             year = random.randint(2021, dt_now.year)
             if (dt_now.year == 2021):
                 month = random.randint(2, dt_now.month)
