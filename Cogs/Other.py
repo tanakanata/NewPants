@@ -206,6 +206,11 @@ class Other(commands.Cog):
             time_now = message.content.replace('PONG ', '')
             ping_time = self.jst.localize(
                 datetime.datetime.strptime(time_now, '%Y-%m-%d %H:%M:%S.%f'))
+            print "###############################################"
+            print message.created_at
+            print datetime.timedelta(hours=9) 
+            print message.created_at + datetime.timedelta(hours=9)
+            print "###############################################"
             post_time = self.jst.localize(message.created_at +  # noqa
                                                              datetime.timedelta(hours=9))  # noqa
             diff_time = post_time - ping_time
