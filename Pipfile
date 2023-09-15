@@ -4,17 +4,17 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-discord = "*"
 numpy = "*"
 opencv-python = "*"
-pykakasi = "==2.0.1"
-pytz = "==2020.4"
-requests = "==2.25.1"
-urlextract = "==1.2.0"
+pykakasi = "*"
+pytz = "*"
+requests = "*"
+urlextract = "*"
 rembg = "*"
-py-cord = "*"
+py-cord = {extras = ["voice"], version = "*"}
 
 [dev-packages]
 
 [requires]
-python_version = "3.9"
+python_version = "3.10"
+python_full_version = "3.10.2"
