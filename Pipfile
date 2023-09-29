@@ -12,6 +12,7 @@ requests = "*"
 urlextract = "*"
 rembg = "*"
 py-cord = {extras = ["voice"], version = "*"}
+deepl = "*"
 
 [dev-packages]
 
