@@ -9,7 +9,7 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix='!', help_command=None, intents=intents)
 
 cog_list = ['Animal', 'ColorImaging', 'Image', 'Jihou',
-            'Kotoba', 'Logging', 'Other', 'Steam', 'Poll']
+            'Kotoba', 'Logging', 'Other', 'Steam', 'Poll', 'Translate']
 
 adminlist = [227845640661499905, 713388740990468097, 237261228781600768, 809576158240571454]
 
