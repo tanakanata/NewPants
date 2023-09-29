@@ -42,7 +42,7 @@ class Translate(commands.Cog):
         limit = usage.character.limit
         return count, limit
     
-    @commands.slash_command(name="lang",guild_id=['267396486088622080'],description="翻訳可能言語一覧を送信します。")
+    @commands.slash_command(name="lang",description="翻訳可能言語一覧を送信します。")
     async def list_target_languages(self,ctx:discord.ApplicationContext):
         msg = "```翻訳可能言語"
         for k,v in self.tgt_langs.items():
@@ -51,7 +51,7 @@ class Translate(commands.Cog):
         msg = msg + "```"
         await ctx.respond(msg)
 
-    @commands.slash_command(guild_id=['267396486088622080'],description="翻訳します。")
+    @commands.slash_command(description="翻訳します。")
     async def translate(self, ctx: discord.ApplicationContext,
                         tgt_lang: Option(str,"翻訳先言語コード",name="言語"), 
                         text: Option(str,"翻訳したいテキスト",name="テキスト")):
