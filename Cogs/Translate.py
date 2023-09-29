@@ -78,7 +78,7 @@ class Translate(commands.Cog):
         
 
         if len(result.text) + len(result.detected_source_lang) <= discord_text_max_length:
-            rst_joined_text = f'{result.text} \n{tgt_lang.upper()} >> {result.detected_source_lang}\n残り{remain}文字'
+            rst_joined_text = f'{result.text} \n{result.detected_source_lang} >> {tgt_lang.upper()}\n残り{remain}文字'
             await ctx.respond(rst_joined_text)
 
         else:
@@ -97,7 +97,7 @@ class Translate(commands.Cog):
                 await ctx.respond(part_msg_text)
                 part_msg_text =""
 
-            part_msg_text = f'{part_msg_text} \n{tgt_lang.upper()} >> {result.detected_source_lang}\n残り{remain}文字'
+            part_msg_text = f'{part_msg_text} \n{result.detected_source_lang} >> {tgt_lang.upper()}\n残り{remain}文字'
             await ctx.respond(part_msg_text)
 
 def setup(bot):
