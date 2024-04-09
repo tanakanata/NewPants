@@ -70,8 +70,11 @@ class Translate(commands.Cog):
             return
 
         if tgt_lang.upper() not in self.tgt_lang_code_list:
-            await ctx.respond("翻訳先の言語指定がおかしいよ")
-            return
+            if tgt_lang.upper() == "AR":
+                pass
+            else:
+                await ctx.respond("翻訳先の言語指定がおかしいよ")
+                return
 
         result = self.translator.translate_text(text=text, target_lang=tgt_lang)
 
