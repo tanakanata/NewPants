@@ -8,7 +8,7 @@ intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix='!', help_command=None, intents=intents)
 
-cog_list = ['Animal', 'ColorImaging', 'Image', 'Jihou','Kotoba',
+cog_list = ['Animal', 'ColorImaging', 'Dice', 'Image', 'Jihou','Kotoba',
             'Logging', 'Other', 'Steam', 'Poll', 'Translate',
             'Killer']
 
