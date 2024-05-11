@@ -24,7 +24,7 @@ class Dice(commands.Cog):
             result = random.randint(1,side_num)
             result_list.append(result)
             total += result
-        print(result_list)
+            
         msg:str = "".join(str(result_list))
         msg = msg + " 合計" + str(total)
 
