@@ -12,7 +12,7 @@ class Dice(commands.Cog):
 
     
 
-    @commands.slash_command(description="指定数のダイスを振ります", guild_ids=[267396486088622080])
+    @commands.slash_command(description="指定数のダイスを振ります")
     async def dice(self, ctx: discord.ApplicationContext,
                    dice_num: Option(int, name='ダイス数'),
                    side_num: Option(int, name="面数")):
@@ -30,7 +30,7 @@ class Dice(commands.Cog):
 
         await ctx.respond(msg)
 
-    @commands.slash_command(name="random", guild_ids=[267396486088622080])
+    @commands.slash_command(name="random")
     async def random_cmd(self, ctx: discord.ApplicationContext,
                          num: Option(int, name="最大数")):
         msg = ctx.author.nick + "さんの結果は " + str(random.randint(1,num)) + " でした"
