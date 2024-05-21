@@ -19,6 +19,7 @@ class Dice(commands.Cog):
         
         if dice_num == 0 or side_num == 0:
             await ctx.respond("1以上を指定してね")
+            return
 
         result_list:list = []
         total: int = 0
@@ -39,6 +40,7 @@ class Dice(commands.Cog):
         
         if num == 0:
             await ctx.respond("1以上を指定してね")
+            return
 
         msg = ctx.author.nick + "さんの結果は " + str(random.randint(1,num)) + " でした"
         await ctx.respond(msg)
