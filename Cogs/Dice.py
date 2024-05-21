@@ -17,7 +17,7 @@ class Dice(commands.Cog):
                    dice_num: Option(int, name='ダイス数'),
                    side_num: Option(int, name="面数")):
         
-        if dice_num or side_num == 0:
+        if dice_num == 0 or side_num == 0:
             await ctx.respond("1以上を指定してね")
 
         result_list:list = []
